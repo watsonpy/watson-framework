@@ -27,6 +27,7 @@ class PyPiPublish(BaseCommand):
     """
     def run(self):
         if (confirm('Are you sure you want to push to PyPi?')):
+            os.system('py.test')
             os.system('python setup.py sdist upload')
             clean()
 
@@ -79,8 +80,8 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.3'
-        'Programming Language :: Python :: Implementation :: CPython'
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Internet :: WWW/HTTP :: WSGI',

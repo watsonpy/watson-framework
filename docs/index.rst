@@ -54,6 +54,11 @@ correctly, these include:
 Notes about these dependencies can be found within the relevant
 documentation in the :ref:`reference_library`.
 
+Installation
+------------
+
+``pip install watson-framework``
+
 Testing
 -------
 
