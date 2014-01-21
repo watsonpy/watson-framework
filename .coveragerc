@@ -1,0 +1,10 @@
+[run]
+# omit
+
+[html]
+directory = tests/_coverage
+
+[report]
+exclude_lines =
+    pragma: no cover
+    pass

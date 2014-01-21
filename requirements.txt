@@ -1,0 +1,18 @@
+# Unit Test
+pytest
+pytest-cov
+coverage
+coveralls
+
+# Watson
+watson-cache >= 1.0.0
+watson-common >= 1.0.0
+watson-console >= 1.0.0
+watson-di >= 1.0.0
+watson-dev >= 1.0.0
+watson-events >= 1.0.0
+watson-filter >= 1.0.0
+watson-form >= 1.0.0
+watson-html >= 1.0.0
+watson-http >= 1.0.0
+watson-validators >= 1.0.0

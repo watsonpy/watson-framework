@@ -1,0 +1,11 @@
+language: python
+python:
+    - 3.3
+install:
+    - pip install -r requirements.txt --use-mirrors
+before_script:
+    - mkdir -p tests/_coverage
+script:
+    - py.test tests/ --cov watson --cov-report term-missing
+after_success:
+    - coveralls --verbose
