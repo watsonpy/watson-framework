@@ -5,6 +5,7 @@ coverage
 coveralls
 
 # Watson
+jinja2 == 2.7.2
 watson-common >= 1.0.0
 watson-cache >= 1.0.0
 watson-console >= 1.0.0
