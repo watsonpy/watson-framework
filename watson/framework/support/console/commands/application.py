@@ -221,7 +221,7 @@ ROUTES_PY_TEMPLATE = """# -*- coding: utf-8 -*-
 routes = {
     'index': {
         'path': '/',
-        'defaults': {'controller': '${app_name}.controllers.Index'}
+        'options': {'controller': '${app_name}.controllers.Index'}
     }
 }
 """
@@ -270,7 +270,7 @@ SAMPLE_VIEW_TEMPLATE = """<!DOCTYPE html>
     <body>
         <h1>{{ content }}</h1>
         <p>You are now on your way to creating your first application using Watson.</p>
-        <p>Read more about Watson in <a href="http://simoncoulton.github.io/watson/">the documentation.</a>
+        <p>Read more about Watson in <a href="http://watson-framework.readthedocs.org/">the documentation.</a>
     </body>
 </html>
 """
@@ -297,7 +297,7 @@ SCRIPT_DIR, SCRIPT_FILE = os.path.split(os.path.abspath(__file__))
 os.environ.update({
     'APP_MODULE': '${app_name}',
     'APP_DIR': os.path.join(SCRIPT_DIR, '${app_name}'),
-    'PUBLIC_DIR': os.path.join(SCRIPT_DIR, 'public')
+    'PUBLIC_DIR': os.path.join(SCRIPT_DIR, 'public'),
     'SCRIPT_DIR': SCRIPT_DIR
 })
 try:
@@ -310,7 +310,7 @@ from watson.framework import applications
 from ${app_name}.config import config
 
 if __name__ == '__main__':
-    os.chdir(APP_DIR)
+    os.chdir(os.environ['APP_DIR'])
     application = applications.Console(config)
     application()
 """
