@@ -54,7 +54,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(path, 'LICENSE')) as f:
     license = f.read()
 
-with open(os.path.join(path, 'README.md')) as f:
+with open(os.path.join(path, 'README.rst')) as f:
     readme = f.read()
 
 with open(os.path.join(path, 'requirements.txt')) as f:

@@ -11,13 +11,7 @@ Watson - A Python 3 Web Framework
 
     It's elementary my dear Watson
 
-+-----------+------------------+---------------------+
-| Branch    | Status           | Coverage            |
-+===========+==================+=====================+
-| Master    | |Build StatusM|  | |Coverage Status|   |
-+-----------+------------------+---------------------+
-| Develop   | |Build StatusD|  |                     |
-+-----------+------------------+---------------------+
+|Build Status| |Coverage Status| |Version| |Downloads| |Licence|
 
 Watson is an easy to use framework designed to get out of your way and
 let you code your application rather than spend time wrangling with the
@@ -71,21 +65,22 @@ If you would like to contribute to Watson, please feel free to issue a
 pull request via Github with the associated tests for your code. Your
 name will be added to the AUTHORS file under contributors.
 
-.. _Jinja2: http://jinja.pocoo.org/docs/
-.. _Memcached: http://pypi.python.org/pypi/python3-memcached/
-.. _Redis: https://github.com/andymccurdy/redis-py
-
-.. |Coverage Status| image:: https://coveralls.io/repos/bespohk/watson-framework/badge.png
-   :target: https://coveralls.io/r/bespohk/watson-framework
-.. |Build StatusD| image:: https://api.travis-ci.org/bespohk/watson-framework.png?branch=develop
-   :target: https://travis-ci.org/bespohk/watson-framework
-.. |Build StatusM| image:: https://api.travis-ci.org/bespohk/watson-framework.png?branch=master
-   :target: https://travis-ci.org/bespohk/watson-framework
-.. |Pypi| image:: https://pypip.in/v/watson-framework/badge.png
-   :target: https://crate.io/packages/watson-framework/
-
-
 Table of Contents
 -----------------
 
 .. include:: toc.rst.inc
+
+.. _Jinja2: http://jinja.pocoo.org/docs/
+.. _Memcached: http://pypi.python.org/pypi/python3-memcached/
+.. _Redis: https://github.com/andymccurdy/redis-py
+
+.. |Build Status| image:: https://api.travis-ci.org/Bespohk/watson-framework.png?branch=master
+   :target: https://travis-ci.org/Bespohk/watson-framework
+.. |Coverage Status| image:: https://coveralls.io/repos/bespohk/watson-framework/badge.png
+   :target: https://coveralls.io/r/bespohk/watson-framework
+.. |Version| image:: https://pypip.in/v/watson-framework/badge.png
+   :target: https://pypi.python.org/pypi/watson-framework/
+.. |Downloads| image:: https://pypip.in/d/watson-framework/badge.png
+   :target: https://pypi.python.org/pypi/watson-framework/
+.. |Licence| image:: https://pypip.in/license/watson-framework/badge.png
+   :target: https://pypi.python.org/pypi/watson-framework/
