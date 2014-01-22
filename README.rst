@@ -36,10 +36,10 @@ Dependencies
 -  watson-http
 -  watson-validators
 
-.. |Build Status| image:: https://api.travis-ci.org/Bespohk/watson-framework.png?branch=master
-   :target: https://travis-ci.org/Bespohk/watson-framework
-.. |Coverage Status| image:: https://coveralls.io/repos/bespohk/watson-framework/badge.png
-   :target: https://coveralls.io/r/bespohk/watson-framework
+.. |Build Status| image:: https://api.travis-ci.org/watsonpy/watson-framework.png?branch=master
+   :target: https://travis-ci.org/watsonpy/watson-framework
+.. |Coverage Status| image:: https://coveralls.io/repos/watsonpy/watson-framework/badge.png
+   :target: https://coveralls.io/r/watsonpy/watson-framework
 .. |Version| image:: https://pypip.in/v/watson-framework/badge.png
    :target: https://pypi.python.org/pypi/watson-framework/
 .. |Downloads| image:: https://pypip.in/d/watson-framework/badge.png

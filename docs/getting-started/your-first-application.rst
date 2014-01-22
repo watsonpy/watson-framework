@@ -127,7 +127,7 @@ The presentation layer (or view) is matched based on lowercased versions of the 
         <body>
             <h1>{{ content }}</h1>
             <p>You are now on your way to creating your first application using Watson.</p>
-            <p>Read more about Watson in <a href="http://github.com/bespohk/watson-framework">the documentation.</a>
+            <p>Read more about Watson in <a href="http://github.com/watsonpy/watson-framework">the documentation.</a>
         </body>
     </html>
 

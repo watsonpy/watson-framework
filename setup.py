@@ -64,7 +64,7 @@ with open(os.path.join(path, 'requirements.txt')) as f:
 setup(
     name='watson-framework',
     version=watson.framework.__version__,
-    url='http://github.com/bespohk/watson-framework',
+    url='http://github.com/watsonpy/watson-framework',
     description='A Python 3 web app framework.',
     long_description=readme,
 

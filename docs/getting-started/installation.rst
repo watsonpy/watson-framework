@@ -36,4 +36,4 @@ from your CLI and then enter the following:
 Once you've got Watson installed, head on over to the :ref:`your_first_application` area to learn how to create your first web application.
 
 .. _pip: https://pypi.python.org/pypi/pip
-.. _Github: http://github.com/bespohk/watson-framework
+.. _Github: http://github.com/watsonpy/watson-framework
