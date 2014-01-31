@@ -2,6 +2,7 @@ language: python
 python:
     - 3.3
 install:
+    - pip install -r requirements-test.txt --use-mirrors
     - pip install -r requirements.txt --use-mirrors
 before_script:
     - mkdir -p tests/_coverage
