@@ -12,7 +12,7 @@ class Router(object):
     Attributes:
         routes (OrderedDict): A dict of routes
     """
-    routes = None
+    __slots__ = ('routes')
 
     def __init__(self, routes=None):
         if not routes:
@@ -32,12 +32,10 @@ class Router(object):
         Returns:
             A list of RouteMatch namedtuples.
         """
-        matches = []
         for name, route in self.routes.items():
             route_match = route.match(request)
             if route_match:
-                matches.append(route_match)
-        return matches
+                yield route_match
 
     def assemble(self, route_name, **kwargs):
         """Converts the route into a path.

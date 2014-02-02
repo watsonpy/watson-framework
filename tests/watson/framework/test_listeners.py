@@ -66,7 +66,7 @@ class TestDispatchExecuteListener(object):
                     'container': IocContainer(),
                     'request': create_request_from_environ(environ)})
         listener = listeners.DispatchExecute({'404': 'page/404'})
-        response = listener(event)
+        response, view_model = listener(event)
         assert isinstance(response, Response)
 
 

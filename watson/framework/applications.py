@@ -174,8 +174,7 @@ class Http(Base):
                                                }
                                        )
                 dispatch_result = self.dispatcher.trigger(dispatch_event)
-                response = dispatch_event.params['controller_class'].response
-                view_model = dispatch_result.first()
+                response, view_model = dispatch_result.first()
             except ApplicationError as exc:
                 response, view_model = self.handle_exception(exception=exc, request=request, route_match=route_match)
         if not isinstance(view_model, Response):

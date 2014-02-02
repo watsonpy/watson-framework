@@ -10,7 +10,8 @@ from watson.di import ContainerAware
 from watson.http import MIME_TYPES
 from watson.http.messages import Response
 from watson.framework import controllers
-from watson.framework.exceptions import NotFoundError, InternalServerError, ExceptionHandler, ApplicationError
+from watson.framework.exceptions import (NotFoundError, InternalServerError,
+                                         ApplicationError)
 from watson.framework.views import Model
 
 
@@ -25,13 +26,12 @@ class Route(Base):
 
     def __call__(self, event):
         router, request = event.params['router'], event.params['request']
-        matches = router.matches(request)
-        if not matches:
-            raise NotFoundError(
-                'Route not found for request: {0}'.format(request.url),
-                404)
-        event.params['route_match'] = matches[0]
-        return matches[0]
+        for match in router.matches(request):
+            event.params['route_match'] = match
+            return match
+        raise NotFoundError(
+            'Route not found for request: {0}'.format(request.url),
+            404)
 
 
 class DispatchExecute(Base):
@@ -39,7 +39,9 @@ class DispatchExecute(Base):
     def __init__(self, templates):
         self.templates = templates
 
-    def __call__(self, event):
+    def determine_controller(self, event):
+        """Figure out which controller class is associated with the route.
+        """
         route_match = event.params['route_match']
         try:
             controller_class = route_match.route.options['controller']
@@ -52,63 +54,72 @@ class DispatchExecute(Base):
                 controller_definition['type'] = 'prototype'
                 if 'item' not in controller_definition:
                     controller_definition['item'] = controller_class
-
-            controller = event.params['container'].get(controller_class)
+            controller = container.get(controller_class)
+            controller.event = event
+            controller.request = event.params['request']
+            return controller
         except Exception as exc:
             raise InternalServerError(
                 'Controller not found for route: {0}'.format(
                     route_match.route.name)) from exc
-        event.params['controller_class'] = controller
-        controller.event = event
-        controller.request = event.params['request']
+
+    def get_returned_controller_data(self, controller, event):
+        route_match = event.params['route_match']
         try:
             execute_params = route_match.params
             model_data = controller.execute(**execute_params)
             if model_data is None:
                 raise InternalServerError(
                     'The controller {0} did not return any data.'.format(controller))
-            short_circuit = False
             if isinstance(model_data, controllers.ACCEPTABLE_RETURN_TYPES):
                 model_data = {'content': model_data}
             elif isinstance(model_data, Response):
-                short_circuit = True
-                response = model_data
-            if not short_circuit:
-                context = {'context': {'controller': controller}}
-                path = controller.get_execute_method_path(
-                    **route_match.params)
-                controller_template = os.path.join(*path)
-                view_template = self.templates.get(controller_template,
-                                                   controller_template)
-                format = route_match.params.get('format', 'html')
-                if isinstance(model_data, Model):
-                    if isinstance(model_data.data, dict):
-                        model_data.data.update(context)
-                    if not model_data.template:
-                        model_data.template = view_template
-                    else:
-                        overridden_template = path[:-1] + [model_data.template]
-                        model_data.template = os.path.join(
-                            *overridden_template)
-                    if not model_data.format:
-                        model_data.format = format
-                    response = model_data
+                # Short circuited, skip any templating
+                controller.response = model_data
+                return model_data, model_data
+            context = {'context': {'controller': controller}}
+            path = controller.get_execute_method_path(
+                **route_match.params)
+            controller_template = os.path.join(*path)
+            view_template = self.templates.get(controller_template,
+                                               controller_template)
+            format = route_match.params.get('format', 'html')
+            if isinstance(model_data, Model):
+                if isinstance(model_data.data, dict):
+                    model_data.data.update(context)
+                if not model_data.template:
+                    model_data.template = view_template
                 else:
-                    if isinstance(model_data, dict):
-                        model_data.update(context)
-                    response = Model(
-                        format=format,
-                        template=view_template,
-                        data=model_data)
+                    overridden_template = path[:-1] + [model_data.template]
+                    model_data.template = os.path.join(
+                        *overridden_template)
+                if not model_data.format:
+                    model_data.format = format
+                view_model = model_data
+            else:
+                if isinstance(model_data, dict):
+                    model_data.update(context)
+                view_model = Model(
+                    format=format,
+                    template=view_template,
+                    data=model_data)
+            return controller.response, view_model
         except (ApplicationError, NotFoundError, InternalServerError) as exc:
             raise
         except Exception as exc:
             raise InternalServerError(
                 'An error occurred executing controller: {0}'.format(get_qualified_name(controller))) from exc
+
+    def add_session_cookie(self, controller):
         controller.request.session_to_cookie()
         if controller.request.cookies.modified:
             controller.response.cookies.merge(controller.request.cookies)
-        return response
+
+    def __call__(self, event):
+        controller = self.determine_controller(event)
+        response, view_model = self.get_returned_controller_data(controller, event)
+        self.add_session_cookie(controller)
+        return response, view_model
 
 
 class Exception_(Base):

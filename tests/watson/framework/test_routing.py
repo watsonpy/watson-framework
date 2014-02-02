@@ -216,7 +216,7 @@ class TestRouter(object):
             }
         })
         request = create_request_from_environ(sample_environ(PATH_INFO='/'))
-        matches = router.matches(request)
+        matches = [route_match for route_match in router.matches(request)]
         assert matches[0].route.name == 'highest'
         assert matches[3].route.name == 'lowest'
 
@@ -245,11 +245,11 @@ class TestRouter(object):
         assert len(router) == 5
 
         request = create_request_from_environ(sample_environ(PATH_INFO='/child_one'))
-        matches = router.matches(request)
+        matches = [route_match for route_match in router.matches(request)]
         assert len(matches) == 0
 
         request = create_request_from_environ(sample_environ(PATH_INFO='/parent/child_one'))
-        matches = router.matches(request)
+        matches = [route_match for route_match in router.matches(request)]
         assert len(matches) == 1
 
         assert router.assemble('parent/child_one/sub_child') == '/parent/child_one/test'
