@@ -50,19 +50,18 @@ dependencies = {
             'item': 'watson.framework.exceptions.ExceptionHandler',
             'init':
             [lambda container: container.get(
-             'application.config').get('debug',
-                                       {})]
+             'application.config').get('debug', {})]
         },
         'jinja2_renderer': {
-            'item': 'watson.framework.renderers.Jinja2',
+            'item': 'watson.framework.views.renderers.jinja2.Renderer',
             'init': [
                 lambda container: container.get('application.config')[
                     'views']['renderers']['default'].get('config', {}),
                 lambda container: container.get('application')
             ]
         },
-        'json_renderer': {'item': 'watson.framework.renderers.Json'},
-        'xml_renderer': {'item': 'watson.framework.renderers.Xml'},
+        'json_renderer': {'item': 'watson.framework.views.renderers.json.Renderer'},
+        'xml_renderer': {'item': 'watson.framework.views.renderers.xml.Renderer'},
         'app_dispatch_execute_listener': {
             'item': 'watson.framework.listeners.DispatchExecute',
             'init':

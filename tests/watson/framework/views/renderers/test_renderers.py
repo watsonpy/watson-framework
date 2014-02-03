@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from watson.framework.renderers import Xml, Json
+from watson.framework.views.renderers.xml import Renderer as Xml
+from watson.framework.views.renderers.json import Renderer as Json
 from tests.watson.framework.support import sample_view_model
 
 

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import importlib
-from json import JSONEncoder
-import jinja2
 import types
-from watson.common import datastructures, contextmanagers, xml
-from watson.framework.renderers import abc
+import jinja2
+from watson.common import datastructures
+from watson.framework.views.renderers import abc
 
 
-class Jinja2(abc.Renderer):
+class Renderer(abc.Renderer):
     _env = None
     _debug_mode = False
 
@@ -16,7 +15,7 @@ class Jinja2(abc.Renderer):
         return self._env
 
     def __init__(self, config=None, application=None):
-        super(Jinja2, self).__init__(config)
+        super(Renderer, self).__init__(config)
         self._debug_mode = application.config['debug']['enabled']
         self.register_loaders()
         _types = ('filters', 'globals')
@@ -311,18 +310,3 @@ class Jinja2(abc.Renderer):
             '{0}.{1}'.format(view_model.template,
                              self.config['extension']))
         return template.render(view_model.data)
-
-
-class Xml(abc.Renderer):
-
-    def __call__(self, view_model):
-        _xml = xml.from_dict(view_model.data)
-        return xml.to_string(_xml, xml_declaration=True)
-
-
-class Json(abc.Renderer):
-
-    def __call__(self, view_model):
-        with contextmanagers.ignored(KeyError, TypeError):
-            del view_model.data['context']
-        return JSONEncoder().encode(view_model.data)
