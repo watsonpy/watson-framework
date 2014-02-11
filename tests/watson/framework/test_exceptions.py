@@ -33,10 +33,9 @@ class TestExceptionHandler(object):
         try:
             raise exc
         except ApplicationError:
-            model = handler(sys.exc_info(), {'test': 'blah'})
+            model = handler(sys.exc_info())
             assert model['debug']
             assert model['type'] == 'watson.framework.exceptions.ApplicationError'
-            assert model['test'] == 'blah'
 
     def test_standard_exc(self):
         handler = ExceptionHandler()
@@ -44,7 +43,7 @@ class TestExceptionHandler(object):
         try:
             raise exc
         except Exception:
-            model = handler(sys.exc_info(), {'test': 'blah'})
+            model = handler(sys.exc_info())
             assert model['code'] == 500
 
     def test_raised_from_cause(self):
@@ -56,5 +55,5 @@ class TestExceptionHandler(object):
             except Exception as e:
                 raise ApplicationError('Something', status_code=300) from e
         except ApplicationError:
-            model = handler(sys.exc_info(), {'test': 'blah'})
+            model = handler(sys.exc_info())
             assert model['code'] == 300

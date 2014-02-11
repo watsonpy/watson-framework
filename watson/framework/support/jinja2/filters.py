@@ -28,7 +28,7 @@ def merge_query_string(obj, values):
     .. code-block:: python
 
         # assuming ?page=2
-        get_request().get|merge_query_string({'page': 1})  # ?page=1
+        request().get|merge_query_string({'page': 1})  # ?page=1
     """
     qs_parts = dict(obj)
     qs_parts.update(values)

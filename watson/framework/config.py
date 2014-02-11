@@ -34,7 +34,7 @@ dependencies = {
         'shared_event_dispatcher':
         {'item': 'watson.events.dispatcher.EventDispatcher'},
         'router': {
-            'item': 'watson.framework.routing.Router',
+            'item': 'watson.routing.routers.DictRouter',
             'init':
             [lambda container: container.get(
              'application.config').get('routes',
@@ -110,9 +110,7 @@ views = {
 # Logging settings
 logging = {
     'callable': 'logging.config.dictConfig',
-    'ignore_status': {
-        '404': True
-    },
+    'ignore_status': (404,),
     'options': {
         'version': 1,
         'disable_existing_loggers': False,

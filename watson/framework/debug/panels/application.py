@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import pprint
+import pygments
+from pygments import formatters, lexers
 import resource
 from watson.framework.debug import abc
 from watson.framework import events
@@ -14,7 +16,7 @@ TEMPLATE = """
 <dt>Memory Usage:</dt>
 <dd>{{ usage }}mb</dd>
 <dt>Configuration</dt>
-<dd>{{ config|e }}</dd>
+<dd>{{ config }}</dd>
 """
 
 
@@ -43,7 +45,7 @@ class Panel(abc.Panel):
         self.application.dispatcher.add(events.RENDER_VIEW, self.render_listener, 1000)
 
     def route_match_listener(self, event):
-        self.route_match = event.params['route_match']
+        self.route_match = event.params['context']['route_match']
 
     def render_listener(self, event):
         self.view_model = event.params['view_model']
@@ -54,7 +56,7 @@ class Panel(abc.Panel):
             controller=self.controller,
             template=self.template,
             usage=self.usage,
-            config=pprint.pformat(self.application.config))
+            config=pygments.highlight(pprint.pformat(self.application.config), lexers.PythonLexer(), formatters.HtmlFormatter()))
 
     def render_key_stat(self):
         return '{0}mb'.format(self.usage)

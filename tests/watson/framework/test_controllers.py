@@ -3,9 +3,9 @@ from io import BytesIO, BufferedReader
 from pytest import raises
 from unittest.mock import Mock
 from watson.events import types
-from watson.http.messages import Request, Response, create_request_from_environ
+from watson.http.messages import Request, Response
 from watson.framework import controllers
-from watson.framework.routing import Router
+from watson.routing.routers import DictRouter
 from tests.watson.framework.support import SampleActionController, SampleRestController, sample_environ
 
 
@@ -20,7 +20,7 @@ class TestBaseHttpController(object):
 
     def test_request_response(self):
         base = controllers.HttpMixin()
-        base.request = Request('GET')
+        base.request = Request.from_environ(sample_environ())
         assert isinstance(base.request, Request)
         assert isinstance(base.response, Response)
 
@@ -46,7 +46,7 @@ class TestBaseHttpController(object):
 
     def test_route_to_url(self):
         base = controllers.HttpMixin()
-        router = Router({
+        router = DictRouter({
             'test': {
                 'path': '/test',
             },
@@ -64,7 +64,7 @@ class TestBaseHttpController(object):
 
     def test_redirect(self):
         base = controllers.HttpMixin()
-        router = Router({
+        router = DictRouter({
             'test': {
                 'path': '/test',
             },
@@ -74,7 +74,7 @@ class TestBaseHttpController(object):
                 'defaults': {'part': 'test'}
             }
         })
-        base.request = create_request_from_environ(sample_environ())
+        base.request = Request.from_environ(sample_environ())
         base.container = Mock()
         base.container.get.return_value = router
         response = base.redirect('/test')
@@ -85,11 +85,11 @@ class TestBaseHttpController(object):
 
     def test_post_redirect_get(self):
         base = controllers.HttpMixin()
-        router = Router({'test': {'path': '/test'}})
+        router = DictRouter({'test': {'path': '/test'}})
         environ = sample_environ(PATH_INFO='/', REQUEST_METHOD='POST')
         environ['wsgi.input'] = BufferedReader(
             BytesIO(b'post_var_one=test&post_var_two=blah'))
-        base.request = create_request_from_environ(
+        base.request = Request.from_environ(
             environ, 'watson.http.sessions.Memory')
         base.container = Mock()
         base.container.get.return_value = router
@@ -103,7 +103,7 @@ class TestBaseHttpController(object):
 
     def test_flash_message(self):
         controller = SampleActionController()
-        controller.request = Request('GET')
+        controller.request = Request.from_environ(sample_environ(), 'watson.http.sessions.Memory')
         controller.flash_messages.add('testing')
         controller.flash_messages.add('something')
         assert controller.flash_messages['info'] == ['testing', 'something']
@@ -113,8 +113,9 @@ class TestBaseHttpController(object):
 
     def test_forward(self):
         controller = SampleActionController()
-        controller.request = create_request_from_environ(sample_environ())
-        controller.event = types.Event('test')
+        request = Request.from_environ(sample_environ())
+        context = {'request': request}
+        controller.event = types.Event('test', params={'context': context})
         assert controller.do_forward() == 'Response'
 
 
@@ -127,7 +128,7 @@ class TestActionController(object):
 
     def test_blank_response(self):
         controller = SampleActionController()
-        controller.request = Request('GET')
+        controller.request = Request.from_environ(sample_environ())
         result = controller.execute(action='blank')
         assert isinstance(result, dict)
 
@@ -156,13 +157,13 @@ class TestRestController(object):
 
     def test_execute_result(self):
         controller = SampleRestController()
-        controller.request = Request('GET')
+        controller.request = Request.from_environ(sample_environ())
         result = controller.execute(something='test')
         assert result == 'GET'
 
     def test_method_template(self):
         controller = SampleRestController()
-        controller.request = Request('GET')
+        controller.request = Request.from_environ(sample_environ())
         assert controller.get_execute_method_path() == [
             'samplerestcontroller', 'get']
 
@@ -174,7 +175,7 @@ class TestFlashMessageContainer(object):
         container = controllers.FlashMessagesContainer(session_data)
         assert len(container) == 0
         assert repr(
-            container) == '<watson.framework.controllers.FlashMessagesContainer messages: 0>'
+            container) == '<watson.framework.controllers.FlashMessagesContainer messages:0>'
 
     def test_add_messages(self):
         session_data = {}

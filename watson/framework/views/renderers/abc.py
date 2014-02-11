@@ -3,10 +3,6 @@ import abc
 
 
 class Renderer(metaclass=abc.ABCMeta):
-
-    request = None
-    response = None
-
     @property
     def config(self):
         return self._config
@@ -19,5 +15,5 @@ class Renderer(metaclass=abc.ABCMeta):
         self.config = config or {}
 
     @abc.abstractmethod
-    def __call__(self, view_model):
+    def __call__(self, view_model, context=None):
         raise NotImplementedError('You must implement __call__')  # pragma: no cover

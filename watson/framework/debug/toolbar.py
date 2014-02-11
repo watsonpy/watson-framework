@@ -122,23 +122,43 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         {% endfor %}
     </div>
 </div>
-<script type="text/javascript" src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
 <script type="text/javascript">
-    var body = $('body');
-    body.css('padding-bottom', parseFloat(body.css('padding-bottom')) + parseFloat($('.watson-debug-toolbar__container').height()));
-    var toolbar = $('.watson-debug-toolbar__container'), toggle = $('#DebugToolbarToggle'), buttons = toolbar.find('.watson-debug-toolbar__buttons a[id!="DebugToolbarToggle"]'), panels = toolbar.find('.watson-debug-toolbar__panel');
-    toggle.on('click', function() {
-        panels.removeClass('active');
-        buttons.removeClass('active');
+    function removeClass(el, className) {
+        className = ' ' + className;
+        el.className = el.className.replace(className, '');
+    }
+    function addClass(el, className) {
+        removeClass(el, className);
+        el.className += ' ' + className;
+    }
+    var body = document.body,
+        toolbar = document.querySelector('.watson-debug-toolbar__container'),
+        toggle = document.getElementById('DebugToolbarToggle'),
+        buttons = toolbar.querySelectorAll('.watson-debug-toolbar__buttons a:not([id])'),
+        panels = toolbar.querySelectorAll('.watson-debug-toolbar__panel');
+    body.style.paddingBottom = parseFloat(body.style.paddingBottom) + parseFloat(toolbar.offsetHeight);
+
+    function removeActiveClasses() {
+        var i;
+        for (i = 0; i < panels.length; i++) {
+            removeClass(panels[i], 'active');
+        }
+        for (i = 0; i < buttons.length; i++) {
+            removeClass(buttons[i], 'active');
+        }
+    }
+    toggle.addEventListener('click', function() {
+        removeActiveClasses();
     });
-    buttons.on('click', function() {
-        buttons.removeClass('active');
-        var that = $(this);
-        that.addClass('active');
-        panels.removeClass('active');
-        toolbar.find('.watson-debug-toolbar__panel[data-panel="'+that.data('panel')+'"]').addClass('active');
-        toolbar.removeClass('collapsed');
-    });
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function() {
+            removeActiveClasses();
+            removeClass(toolbar, 'collapsed');
+            addClass(this, 'active');
+            var panel = this.getAttribute('data-panel');
+            addClass(toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]'), 'active');
+        });
+    }
 </script>
 """
 
@@ -170,8 +190,8 @@ class Toolbar(object):
         """
         for module, panel in self.panels.items():
             panel.event = event
-        response, view_model = event.params[
-            'response'], event.params['view_model']
+        context = event.params['context']
+        response, view_model = context['response'], event.params['view_model']
         if view_model.format == 'html':
             html_body = ''.join(
                 (self.renderer.env.from_string(TEMPLATE).render(panels=self.panels), self.replace_tag))

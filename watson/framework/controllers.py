@@ -3,7 +3,8 @@ import abc
 import collections
 import re
 from watson.di import ContainerAware
-from watson.events.types import Event
+from watson.events import types
+from watson.framework import events
 from watson.http.messages import Response, Request
 from watson.common.imports import get_qualified_name
 from watson.common.contextmanagers import ignored
@@ -21,17 +22,7 @@ class Base(ContainerAware, metaclass=abc.ABCMeta):
     """
     def execute(self, **kwargs):
         method = self.get_execute_method(**kwargs)
-        try:
-            result = method(**kwargs)
-        except TypeError as exc:
-            exc_msg = str(exc)
-            # There has to be a better/quicker way to determine if the cause
-            # is because of kwargs
-            if 'required positional argument' not in exc_msg \
-                    and 'got an unexpected keyword' not in exc_msg:
-                raise exc
-            result = method()
-        return result or {}
+        return method(**kwargs) or {}
 
     @abc.abstractmethod
     def get_execute_method(self, **kwargs):
@@ -56,8 +47,6 @@ class HttpMixin(object):
         _request: The request made that has triggered the controller
         _response: The response that will be returned by the controller
     """
-    _request = None
-    _response = None
     _event = None
 
     @property
@@ -68,6 +57,9 @@ class HttpMixin(object):
         Returns:
             watson.events.types.Event
         """
+        if not self._event:
+            self._event = types.Event(
+                events.DISPATCH_EXECUTE, params={'context': {}})
         return self._event
 
     @event.setter
@@ -81,7 +73,7 @@ class HttpMixin(object):
             TypeError if the event type is not a subclass of
             watson.events.types.Event
         """
-        if not isinstance(event, Event):
+        if not isinstance(event, types.Event):
             raise TypeError(
                 'Invalid request type, expected watson.events.types.Event')
         self._event = event
@@ -93,7 +85,9 @@ class HttpMixin(object):
         Returns:
             watson.http.messages.Request
         """
-        return self._request
+        if 'request' not in self.event.params['context']:
+            return None
+        return self.event.params['context']['request']
 
     @request.setter
     def request(self, request):
@@ -110,7 +104,7 @@ class HttpMixin(object):
         if not isinstance(request, Request):
             raise TypeError(
                 'Invalid request type, expected watson.http.messages.Request')
-        self._request = request
+        self.event.params['context']['request'] = request
 
     @property
     def response(self):
@@ -121,9 +115,9 @@ class HttpMixin(object):
         Returns:
             watson.http.messages.Response
         """
-        if not self._response:
+        if 'response' not in self.event.params['context']:
             self.response = Response()
-        return self._response
+        return self.event.params['context']['response']
 
     @response.setter
     def response(self, response):
@@ -140,7 +134,7 @@ class HttpMixin(object):
         if not isinstance(response, Response):
             raise TypeError(
                 'Invalid response type, expected watson.http.messages.Response')
-        self._response = response
+        self.event.params['context']['response'] = response
 
     def url(self, route_name, host=None, scheme=None, **params):
         """Converts a route into a url.
@@ -184,7 +178,7 @@ class HttpMixin(object):
             A watson.http.messages.Response object.
         """
         self.response.status_code = status_code
-        if self.request.is_method(('POST', 'PUT')):
+        if self.request.is_method('POST', 'PUT'):
             self.response.status_code = status_code if status_code != 302 else 303
             self.request.session['post_redirect_get'] = dict(self.request.post)
         if clear:
@@ -247,10 +241,12 @@ class HttpMixin(object):
         Returns:
             A watson.framework.controllers.FlashMessagesContainer object.
         """
-        if not hasattr(self, '_flash_messages_container'):
-            self._flash_messages_container = FlashMessagesContainer(
+        if not self.request.session:
+            raise Exception('You must enable sessions in the application configuration.')
+        if 'flash_messages' not in self.event.params['context']:
+            self.event.params['context']['flash_messages'] = FlashMessagesContainer(
                 self.request.session)
-        return self._flash_messages_container
+        return self.event.params['context']['flash_messages']
 
 
 class FlashMessagesContainer(object):
@@ -324,7 +320,7 @@ class FlashMessagesContainer(object):
         return len(self.messages)
 
     def __repr__(self):
-        return '<{0} messages: {1}>'.format(get_qualified_name(self), len(self))
+        return '<{0} messages:{1}>'.format(get_qualified_name(self), len(self))
 
 
 class Action(Base, HttpMixin):
@@ -339,12 +335,16 @@ class Action(Base, HttpMixin):
             def my_func_action(self):
                 return 'something'
     """
+    def execute(self, **kwargs):
+        actual_kwargs = kwargs.copy()
+        with ignored(Exception):
+            del actual_kwargs['action']
+        method = self.get_execute_method(**kwargs)
+        return method(**actual_kwargs) or {}
 
     def get_execute_method(self, **kwargs):
-        if not hasattr(self, '__action__') or 'action' in kwargs:
-            method_name = kwargs.get('action', 'index') + '_action'
-            self.__action__ = method_name
-        return getattr(self, self.__action__)
+        method_name = kwargs.get('action', 'index') + '_action'
+        return getattr(self, method_name)
 
     def get_execute_method_path(self, **kwargs):
         template = re.sub('.-', '_', kwargs.get('action', 'index').lower())
@@ -365,9 +365,7 @@ class Rest(Base, HttpMixin):
     """
 
     def get_execute_method(self, **kwargs):
-        if not hasattr(self, '__action__'):
-            self.__action__ = self.request.method
-        return getattr(self, self.__action__)
+        return getattr(self, self.request.method)
 
     def get_execute_method_path(self, **kwargs):
         template = self.request.method.lower()

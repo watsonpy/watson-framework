@@ -9,7 +9,7 @@ from watson.common.imports import load_definition_from_string
 from watson.console import ConsoleError, colors
 from watson.console import command
 from watson.di import ContainerAware
-from watson.http.messages import create_request_from_environ
+from watson.http.messages import Request
 from watson.dev.server import make_dev_server
 
 
@@ -177,7 +177,7 @@ class Routes(command.Base, ContainerAware):
                     'PATH_INFO': self.parsed_args.url,
                     'SERVER_NAME': self.parsed_args.server or '127.0.0.1'
                 })
-                request = create_request_from_environ(environ)
+                request = Request.from_environ(environ)
                 matches = router.matches(request)
                 if matches:
                     sys.stdout.write(

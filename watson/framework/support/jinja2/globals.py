@@ -36,7 +36,7 @@ config = Config  # alias to Config
 
 
 @contextfunction
-def get_request(context):
+def request(context):
     """Retrieves the request from the controller.
 
     Deprecated: Just use 'request'
@@ -45,21 +45,21 @@ def get_request(context):
 
     .. code-block:: python
 
-        {{ get_request() }}
+        {{ request() }}
     """
-    return context['context']['controller'].request
+    return context['context']['request']
 
 
 @contextfunction
-def get_flash_messages(context):
+def flash_messages(context):
     """Retrieves the flash messages from the controller.
 
     Example:
 
     .. code-block:: python
 
-        {{ get_flash_messages() }}
+        {{ flash_messages() }}
     """
-    if 'context' not in context:
-        return []
-    return context['context']['controller'].flash_messages
+    if 'flash_messages' not in context['context']:
+        return {}
+    return context['context']['flash_messages']

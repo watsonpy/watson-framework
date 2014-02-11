@@ -30,6 +30,9 @@ class TestHttpApplication(object):
                     'path': '/',
                     'options': {
                         'controller': 'tests.watson.framework.support.TestController'
+                    },
+                    'requires': {
+                        'format': 'json'
                     }
                 }
             },
@@ -42,11 +45,10 @@ class TestHttpApplication(object):
                 'enabled': True
             }
         })
-        response = application(
-            sample_environ(PATH_INFO='/',
-                           REQUEST_METHOD='POST',
-                           HTTP_ACCEPT='application/json'),
-            start_response)
+        environ = sample_environ(PATH_INFO='/',
+                                 REQUEST_METHOD='POST',
+                                 HTTP_ACCEPT='application/json')
+        response = application(environ, start_response)
         assert response == [b'{"content": "Posted Hello World!"}']
 
     def test_raise_exception_event_not_found(self):

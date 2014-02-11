@@ -52,7 +52,7 @@ class Panel(abc.Panel):
 
     def render(self):
         return self.renderer.env.from_string(TEMPLATE).render(
-            request=self.event.params['request'])
+            request=self.event.params['context']['request'])
 
     def render_key_stat(self):
-        return self.event.params['request'].method
+        return self.event.params['context']['request'].method

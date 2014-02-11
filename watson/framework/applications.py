@@ -9,7 +9,7 @@ from watson.di import ContainerAware
 from watson.di.container import IocContainer
 from watson.events.dispatcher import EventDispatcherAware
 from watson.events.types import Event
-from watson.http.messages import create_request_from_environ, Response
+from watson.http.messages import Request, Response
 from watson.framework.exceptions import ApplicationError
 from watson.framework import config as DefaultConfig, events
 from watson.framework.support.console import commands as DefaultConsoleCommands
@@ -140,7 +140,8 @@ class Http(Base):
 
     """An application structure suitable for use with the WSGI protocol.
 
-    For more information regarding creating an application consult the documentation.
+    For more information regarding creating an application consult the
+    documentation.
 
     Example:
 
@@ -151,37 +152,47 @@ class Http(Base):
     """
 
     def run(self, environ, start_response):
-        request = create_request_from_environ(environ,
-                                              self.config['session']['class'],
-                                              self.config['session'].get('options'))
-        self.container.add('request', request)
+        request = Request.from_environ(environ,
+                                       session_class=self.config['session'].get('class', None),
+                                       session_options=self.config['session'].get('options', None))
+        context = {
+            'request': request
+        }
+        self.context = context
+        # Retrieve the required route match for the request.
         try:
-            route_result = self.dispatcher.trigger(Event(events.ROUTE_MATCH, target=self, params={
-                'request': request,
-                'router': self.container.get('router')
-            }))
+            route_result = self.dispatcher.trigger(
+                Event(
+                    events.ROUTE_MATCH,
+                    target=self,
+                    params={'context': context,
+                            'router': self.container.get('router')}))
             route_match = route_result.first()
         except ApplicationError as exc:
             route_match = None
-            response, view_model = self.handle_exception(exception=exc, request=request)
+            response, view_model = self.exception(exception=exc,
+                                                  context=context)
+        # Execute the relevant controller for the route
         if route_match:
             try:
-                dispatch_event = Event(events.DISPATCH_EXECUTE,
-                                       target=self,
-                                       params={'route_match': route_match,
-                                               'request': request,
-                                               'container': self.container
-                                               }
-                                       )
-                dispatch_result = self.dispatcher.trigger(dispatch_event)
+                dispatch_result = self.dispatcher.trigger(
+                    Event(
+                        events.DISPATCH_EXECUTE,
+                        target=self,
+                        params={'container': self.container,
+                                'context': context}))
                 response, view_model = dispatch_result.first()
             except ApplicationError as exc:
-                response, view_model = self.handle_exception(exception=exc, request=request, route_match=route_match)
-        if not isinstance(view_model, Response):
+                response, view_model = self.exception(
+                    exception=exc, context=context)
+        # Render the view model or response
+        if not hasattr(view_model, 'status_code'):
             try:
-                self.render(request=request, response=response, view_model=view_model)
+                self.render(context=context, view_model=view_model)
             except Exception as exc:
-                response, view_model = self.handle_exception(exception=exc, request=request, route_match=route_match)
+                response, view_model = self.exception(exception=exc,
+                                                      context=context)
+        # Do any cleanup required after the request has ended
         self.dispatcher.trigger(Event(events.COMPLETE,
                                       target=self,
                                       params={'container': self.container}))
@@ -190,29 +201,27 @@ class Http(Base):
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def handle_exception(self, last_exception=None, **kwargs):
-        exception_event = Event(events.EXCEPTION, target=self, params=kwargs)
-        exception_result = self.dispatcher.trigger(exception_event)
+    def exception(self, last_exception=None, **kwargs):
+        event = Event(events.EXCEPTION, target=self, params=kwargs)
+        result = self.dispatcher.trigger(event)
+        view_model = result.first()
         response = Response(kwargs['exception'].status_code)
-        view_model = exception_result.first()
-        kwargs.update({
-            'response': response,
-            'view_model': view_model
-        })
+        context = kwargs['context']
+        context['response'] = response
         if last_exception:
-            self.render(with_dispatcher=False, **kwargs)
+            self.render(with_dispatcher=False,
+                        view_model=view_model, context=context)
         try:
-            self.render(**kwargs)
+            self.render(view_model=view_model, context=context)
         except Exception as exc:
             kwargs['exception'] = exc
-            self.handle_exception(last_exception=exc, **kwargs)
+            self.exception(last_exception=exc, **kwargs)
         return response, view_model
 
     def render(self, with_dispatcher=True, **kwargs):
         kwargs['container'] = self.container
         render_event = Event(events.RENDER_VIEW, target=self, params=kwargs)
         if with_dispatcher:
-            self.container.add('render_event_params', kwargs)
             self.dispatcher.trigger(render_event)
         else:
             listener = self.container.get('app_render_listener')
@@ -251,5 +260,5 @@ class Console(Base):
             return None
         command = self.runner.commands[command_name]
         if not isinstance(command, str):
-            self.container.add(command_name, get_qualified_name(command))
+            self.container.add_definition(command_name, {'item': command})
         return self.container.get(command_name)

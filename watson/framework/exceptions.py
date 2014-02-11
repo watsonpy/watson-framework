@@ -45,10 +45,10 @@ class ExceptionHandler(object):
     def __init__(self, config=None):
         self.config = config or {}
 
-    def __call__(self, exc_info, params):
+    def __call__(self, exc_info):
         code, message, cause_message, frames, type = self.__process_exception(
             exc_info)
-        return collections.ChainMap(params, {
+        return {
             'code': code,
             'message': message,
             'cause_message': cause_message,
@@ -56,7 +56,7 @@ class ExceptionHandler(object):
             'frames': frames,
             'type': type,
             'debug': self.config.get('enabled', True)
-        })
+        }
 
     def __process_exception(self, exc_info):
         try:

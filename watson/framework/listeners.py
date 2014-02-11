@@ -9,6 +9,7 @@ from watson.common.imports import get_qualified_name
 from watson.di import ContainerAware
 from watson.http import MIME_TYPES
 from watson.http.messages import Response
+from watson.http.sessions import session_to_cookie
 from watson.framework import controllers
 from watson.framework.exceptions import (NotFoundError, InternalServerError,
                                          ApplicationError)
@@ -25,13 +26,14 @@ class Base(ContainerAware, metaclass=abc.ABCMeta):
 class Route(Base):
 
     def __call__(self, event):
-        router, request = event.params['router'], event.params['request']
-        for match in router.matches(request):
-            event.params['route_match'] = match
+        router, request = (event.params['router'],
+                           event.params['context']['request'])
+        match = router.match(request)
+        if match:
+            event.params['context']['route_match'] = match
             return match
         raise NotFoundError(
-            'Route not found for request: {0}'.format(request.url),
-            404)
+            'Route not found for request: {0}'.format(request.url), 404)
 
 
 class DispatchExecute(Base):
@@ -42,21 +44,11 @@ class DispatchExecute(Base):
     def determine_controller(self, event):
         """Figure out which controller class is associated with the route.
         """
-        route_match = event.params['route_match']
+        route_match = event.params['context']['route_match']
         try:
-            controller_class = route_match.route.options['controller']
-            container = event.params['container']
-            if controller_class not in container.config['definitions']:
-                container.add(controller_class, controller_class, 'prototype')
-            else:
-                controller_definition = container.config[
-                    'definitions'][controller_class]
-                controller_definition['type'] = 'prototype'
-                if 'item' not in controller_definition:
-                    controller_definition['item'] = controller_class
-            controller = container.get(controller_class)
+            controller = event.params['container'].get(
+                route_match.route.options['controller'])
             controller.event = event
-            controller.request = event.params['request']
             return controller
         except Exception as exc:
             raise InternalServerError(
@@ -64,20 +56,21 @@ class DispatchExecute(Base):
                     route_match.route.name)) from exc
 
     def get_returned_controller_data(self, controller, event):
-        route_match = event.params['route_match']
+        context = event.params['context']
+        route_match = context['route_match']
         try:
             execute_params = route_match.params
             model_data = controller.execute(**execute_params)
             if model_data is None:
                 raise InternalServerError(
-                    'The controller {0} did not return any data.'.format(controller))
+                    'The controller {0} did not return any data.'.format(
+                        controller))
             if isinstance(model_data, controllers.ACCEPTABLE_RETURN_TYPES):
                 model_data = {'content': model_data}
             elif isinstance(model_data, Response):
                 # Short circuited, skip any templating
-                controller.response = model_data
+                controller.response = context['response'] = model_data
                 return model_data, model_data
-            context = {'context': {'controller': controller}}
             path = controller.get_execute_method_path(
                 **route_match.params)
             controller_template = os.path.join(*path)
@@ -85,8 +78,6 @@ class DispatchExecute(Base):
                                                controller_template)
             format = route_match.params.get('format', 'html')
             if isinstance(model_data, Model):
-                if isinstance(model_data.data, dict):
-                    model_data.data.update(context)
                 if not model_data.template:
                     model_data.template = view_template
                 else:
@@ -97,27 +88,26 @@ class DispatchExecute(Base):
                     model_data.format = format
                 view_model = model_data
             else:
-                if isinstance(model_data, dict):
-                    model_data.update(context)
                 view_model = Model(
                     format=format,
                     template=view_template,
                     data=model_data)
+            context['response'] = controller.response
             return controller.response, view_model
         except (ApplicationError, NotFoundError, InternalServerError) as exc:
             raise
         except Exception as exc:
             raise InternalServerError(
-                'An error occurred executing controller: {0}'.format(get_qualified_name(controller))) from exc
+                'An error occurred executing controller: {0}'.format(
+                    get_qualified_name(controller))) from exc
 
     def add_session_cookie(self, controller):
-        controller.request.session_to_cookie()
-        if controller.request.cookies.modified:
-            controller.response.cookies.merge(controller.request.cookies)
+        session_to_cookie(controller.request, controller.response)
 
     def __call__(self, event):
         controller = self.determine_controller(event)
-        response, view_model = self.get_returned_controller_data(controller, event)
+        response, view_model = self.get_returned_controller_data(
+            controller, event)
         self.add_session_cookie(controller)
         return response, view_model
 
@@ -135,10 +125,11 @@ class Exception_(Base):
         except:
             status_code = 500
             setattr(exception, 'status_code', status_code)
-        exc_data = self.handler(sys.exc_info(), event.params)
+        exc_data = self.handler(sys.exc_info())
         ignore_statuses = self.container.get(
-            'application.config')['logging'].get('ignore_status', {})
-        ignore_this_status = ignore_statuses.get(str(status_code), False)
+            'application.config')['logging'].get('ignore_status', ())
+        str_status_code = str(status_code)
+        ignore_this_status = status_code in ignore_statuses
         if not ignore_this_status:
             context = exception.__context__
             if not hasattr(context, '__traceback__'):
@@ -149,8 +140,8 @@ class Exception_(Base):
                 exc_info=(context.__class__, context, context.__traceback__))
         return Model(format='html',  # should this take the format from the request?
                      template=self.templates.get(
-                         str(status_code),
-                         self.templates[str(status_code)]),
+                         str_status_code,
+                         self.templates[str_status_code]),
                      data=exc_data)
 
 
@@ -160,8 +151,8 @@ class Render(Base):
         self.view_config = view_config
 
     def __call__(self, event):
-        response, view_model = event.params[
-            'response'], event.params['view_model']
+        context = event.params['context']
+        response, view_model = context['response'], event.params['view_model']
         renderers = self.view_config['renderers']
         renderer = renderers.get(view_model.format, renderers['default'])
         try:
@@ -172,10 +163,8 @@ class Render(Base):
             else:
                 mime_type = 'text/{0}'.format(view_model.format)
         renderer_instance = event.params['container'].get(renderer['name'])
-        renderer_instance.response = response
-        renderer_instance.request = event.params['request']
         try:
-            response.body = renderer_instance(view_model)
+            response.body = renderer_instance(view_model, context=context)
             if 'Content-Type' not in response.headers:
                 response.headers.add('Content-Type', mime_type)
         except Exception as exc:

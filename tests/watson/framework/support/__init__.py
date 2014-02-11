@@ -53,7 +53,7 @@ class ShortCircuitedController(controllers.Rest):
 
 class SampleRestController(controllers.Rest):
 
-    def GET(self):
+    def GET(self, **kwargs):
         return 'GET'
 
 
@@ -66,10 +66,10 @@ def sample_view_model():
 
 class TestController(controllers.Rest):
 
-    def GET(self):
+    def GET(self, **kwargs):
         return 'Hello World!'
 
-    def POST(self):
+    def POST(self, **kwargs):
         return 'Posted Hello World!'
 
 
