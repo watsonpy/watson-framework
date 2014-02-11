@@ -4,7 +4,6 @@ from types import ModuleType
 from watson.console import Runner
 from watson.console.command import find_commands_in_module
 from watson.common.datastructures import dict_deep_update, module_to_dict
-from watson.common.imports import get_qualified_name
 from watson.di import ContainerAware
 from watson.di.container import IocContainer
 from watson.events.dispatcher import EventDispatcherAware

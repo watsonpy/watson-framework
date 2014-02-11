@@ -58,6 +58,15 @@ Testing
 
 Watson can be tested with py.test. Simply activate your virtualenv and run :python:`python setup.py test`.
 
+Benchmarks
+----------
+
+Using falcon-bench, Watson received the following requests per second (Django and Flask supplied for comparative purposes).
+
+1. watson.........11,920 req/sec or 83.89 μs/req  (3x)
+2. django..........7,696 req/sec or 129.94 μs/req (2x)
+3. flask...........4,281 req/sec or 233.58 μs/req (1x)
+
 Contributing
 ------------
 
