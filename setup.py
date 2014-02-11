@@ -103,7 +103,11 @@ setup(
     include_package_data=True,
 
     zip_safe=False,
-    scripts=['bin/watson-console.py'],
+    entry_points={
+        'console_scripts': [
+            'watson-console = watson.framework.bin:main'
+        ]
+    },
     install_requires=requirements,
     extras_require={
         'test': test_requirements

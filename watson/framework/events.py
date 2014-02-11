@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-INIT = 'event.mvc.init'
-ROUTE_MATCH = 'event.mvc.route.match'
-DISPATCH_EXECUTE = 'event.mvc.dispatch.execute'
-RENDER_VIEW = 'event.mvc.render.view'
-EXCEPTION = 'event.mvc.exception'
-COMPLETE = 'event.mvc.complete'
+INIT = 'event.framework.init'
+ROUTE_MATCH = 'event.framework.route.match'
+DISPATCH_EXECUTE = 'event.framework.dispatch.execute'
+RENDER_VIEW = 'event.framework.render.view'
+EXCEPTION = 'event.framework.exception'
+COMPLETE = 'event.framework.complete'
