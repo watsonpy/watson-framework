@@ -7,7 +7,7 @@ watson-console == 1.0.0
 watson-di == 2.0.0
 watson-dev == 1.0.0
 watson-filters == 1.0.0
-watson-form == 1.0.0
+watson-form == 1.1.0
 watson-html == 1.0.0
 watson-routing == 1.0.1
 watson-validators == 1.0.0
