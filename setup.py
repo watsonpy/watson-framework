@@ -62,13 +62,6 @@ with open(os.path.join(path, 'requirements.txt')) as f:
 
 with open(os.path.join(path, 'requirements-test.txt')) as f:
     test_requirements = f.read().splitlines()
-requirements = [
-    'Jinja2 == 2.7.2',
-    'watson-common == 1.0.2',
-    'watson-cache == 1.0.0',
-    'watson-console == 1.0.0',
-    'watson-dev == 1.0.0',
-]
 
 setup(
     name='watson-framework',
