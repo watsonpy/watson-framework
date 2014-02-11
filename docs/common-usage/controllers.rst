@@ -3,7 +3,7 @@
 Controllers
 ===========
 
-Watson provides two different types of controllers which are called Action and Rest respectively. Each one has its own uses and there is no one size fits all solution.
+Watson provides two different types of controllers which are called Action and Rest respectively. Each one has its own uses and there is no one size fits all solution. A controller is only initialized once, and will not be initialized on each request. Due to this, you must not store any sort of state on the controller. Everything relating to the request the controller is currently dealing with can be retrieved by Controller.event.params['context'].
 
 Creating controllers
 --------------------
