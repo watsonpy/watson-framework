@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import collections
 import linecache
 from watson.framework import __version__
 from watson.common.imports import get_qualified_name

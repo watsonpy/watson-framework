@@ -4,6 +4,7 @@ from types import ModuleType
 from watson.console import Runner
 from watson.console.command import find_commands_in_module
 from watson.common.datastructures import dict_deep_update, module_to_dict
+from watson.common import imports
 from watson.di import ContainerAware
 from watson.di.container import IocContainer
 from watson.events.dispatcher import EventDispatcherAware
@@ -97,6 +98,11 @@ class Base(ContainerAware, EventDispatcherAware, metaclass=abc.ABCMeta):
         """
         Base.global_app = self
         self.config = config or {}
+        if 'exceptions' not in self.config:
+            self.exception_class = ApplicationError
+        else:
+            self.exception_class = imports.load_definition_from_string(
+                self.config['exceptions']['class'])
         self.register_events()
         self.trigger_init_event()
         super(Base, self).__init__()

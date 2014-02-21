@@ -118,18 +118,20 @@ class Exception_(Base):
         self.handler = handler
         self.templates = templates
 
-    def __call__(self, event):
-        exception = event.params['exception']
+    def set_status_code(self, exception):
         try:
-            status_code = exception.status_code
+            exception.status_code
         except:
-            status_code = 500
-            setattr(exception, 'status_code', status_code)
-        exc_data = self.handler(sys.exc_info())
+            setattr(exception, 'status_code', 500)
+        try:
+            exception.format
+        except:
+            setattr(exception, 'format', 'html')
+
+    def log(self, exception):
         ignore_statuses = self.container.get(
             'application.config')['logging'].get('ignore_status', ())
-        str_status_code = str(status_code)
-        ignore_this_status = status_code in ignore_statuses
+        ignore_this_status = exception.status_code in ignore_statuses
         if not ignore_this_status:
             context = exception.__context__
             if not hasattr(context, '__traceback__'):
@@ -138,11 +140,21 @@ class Exception_(Base):
             logger.error(
                 str(context),
                 exc_info=(context.__class__, context, context.__traceback__))
-        return Model(format='html',  # should this take the format from the request?
+
+    def convert_to_view_model(self, exception, exc_data):
+        str_status_code = str(exception.status_code)
+        return Model(format=exception.format,
                      template=self.templates.get(
                          str_status_code,
                          self.templates[str_status_code]),
                      data=exc_data)
+
+    def __call__(self, event):
+        exception = event.params['exception']
+        self.set_status_code(exception)
+        self.log(exception)
+        exc_data = self.handler(sys.exc_info())
+        return self.convert_to_view_model(exception, exc_data)
 
 
 class Render(Base):

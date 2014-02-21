@@ -37,8 +37,7 @@ dependencies = {
             'item': 'watson.routing.routers.DictRouter',
             'init':
             [lambda container: container.get(
-             'application.config').get('routes',
-                                       {})]
+             'application.config').get('routes', None)]
         },
         'profiler': {
             'item': 'watson.framework.debug.profilers.Profiler',
@@ -144,6 +143,10 @@ session = {
     'options': {
         'timeout': 3600
     }
+}
+
+exceptions = {
+    'class': 'watson.framework.exceptions.ApplicationError'
 }
 
 # Application event settings
