@@ -57,7 +57,7 @@ with open(os.path.join(path, 'LICENSE')) as f:
 with open(os.path.join(path, 'README.rst')) as f:
     readme = f.read()
 
-with open(os.path.join(path, 'requirements.txt')) as f:
+with open(os.path.join(path, 'requirements.txt'), encoding='utf-8') as f:
     requirements = f.read().splitlines()
 
 with open(os.path.join(path, 'requirements-test.txt')) as f:
