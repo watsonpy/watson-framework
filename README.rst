@@ -42,9 +42,9 @@ Benchmarks
 
 Using falcon-bench, Watson received the following requests per second (Django and Flask supplied for comparative purposes).
 
-1. watson.........11,920 req/sec or 83.89 μs/req  (3x)
-2. django..........7,696 req/sec or 129.94 μs/req (2x)
-3. flask...........4,281 req/sec or 233.58 μs/req (1x)
+1. watson.........11,920 req/sec or 83.89 ms/req  (3x)
+2. django..........7,696 req/sec or 129.94 ms/req (2x)
+3. flask...........4,281 req/sec or 233.58 ms/req (1x)
 
 .. |Build Status| image:: https://api.travis-ci.org/watsonpy/watson-framework.png?branch=master
    :target: https://travis-ci.org/watsonpy/watson-framework

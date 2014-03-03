@@ -94,7 +94,7 @@ views = {
                 'extension': 'html',
                 'paths': [os.path.join(os.getcwd(), 'views')],
                 'filters': ['watson.framework.support.jinja2.filters'],
-                'globals': ['watson.framework.support.jinja2.globals']
+                'globals': ['watson.framework.support.jinja2.globals'],
             }
         },
         'xml': {'name': 'xml_renderer'},

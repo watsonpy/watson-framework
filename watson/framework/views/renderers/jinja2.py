@@ -305,7 +305,9 @@ class Renderer(abc.Renderer):
             loaders = system_loaders + user_loaders
         else:
             loaders = user_loaders + system_loaders
-        self._env = jinja2.Environment(loader=jinja2.ChoiceLoader(loaders))
+        kwargs = self.config.get('environment', {})
+        kwargs['loader'] = jinja2.ChoiceLoader(loaders)
+        self._env = jinja2.Environment(**kwargs)
 
     def __call__(self, view_model, context=None):
         template = self._env.get_template(

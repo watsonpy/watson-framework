@@ -106,6 +106,10 @@ class CreateApplication(command.Base, ContainerAware):
 class RunDevelopmentServer(command.Base, ContainerAware):
     name = 'rundev'
     help = 'Runs the development server for the current application.'
+    arguments = [
+        (('-h', '--host'), {'help': 'The host to bind to.'}),
+        (('-p', '--port'), {'help': 'The port to run on'}),
+    ]
 
     def execute(self):
         app_dir = os.environ['APP_DIR']
@@ -115,10 +119,16 @@ class RunDevelopmentServer(command.Base, ContainerAware):
         os.chdir(app_dir)
         app = load_definition_from_string('{0}.app.application'.format(
             app_module))
-        make_dev_server(app,
-                        do_reload=True,
-                        script_dir=script_dir,
-                        public_dir=public_dir)
+        kwargs = {
+            'app': app,
+            'script_dir': script_dir,
+            'public_dir': public_dir,
+        }
+        if self.parsed_args.host:
+            kwargs['host'] = self.parsed_args.host
+        if self.parsed_args.port:
+            kwargs['port'] = int(self.parsed_args.port)
+        make_dev_server(**kwargs)
 
 
 class RunTests(command.Base, ContainerAware):
