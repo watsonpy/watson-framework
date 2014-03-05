@@ -55,7 +55,7 @@ dependencies = {
             'item': 'watson.framework.views.renderers.jinja2.Renderer',
             'init': [
                 lambda container: container.get('application.config')[
-                    'views']['renderers']['default'].get('config', {}),
+                    'views']['renderers']['jinja2'].get('config', {}),
                 lambda container: container.get('application')
             ]
         },
@@ -87,8 +87,9 @@ dependencies = {
 # View settings
 views = {
     'default_format': 'html',
+    'default_renderer': 'jinja2',
     'renderers': {
-        'default': {
+        'jinja2': {
             'name': 'jinja2_renderer',
             'config': {
                 'extension': 'html',

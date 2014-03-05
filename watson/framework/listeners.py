@@ -166,7 +166,8 @@ class Render(Base):
         context = event.params['context']
         response, view_model = context['response'], event.params['view_model']
         renderers = self.view_config['renderers']
-        renderer = renderers.get(view_model.format, renderers['default'])
+        renderer = renderers.get(
+            view_model.format, renderers[self.view_config['default_renderer']])
         try:
             mime_type = MIME_TYPES[view_model.format][0]
         except:
