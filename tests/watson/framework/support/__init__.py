@@ -41,8 +41,22 @@ class SampleActionController(controllers.Action):
     def do_forward(self):
         return self.forward(SampleActionController(), method='forwarded')
 
+    def do_method_forward(self):
+        return self.forward('tests.watson.framework.support.AnotherSampleActionController')
+
     def forwarded(self):
         return 'Response'
+
+    def view_model_action(self, **kwargs):
+        return Model(data='test')
+
+    def view_model_template_action(self, **kwargs):
+        return Model(data='test', template='404')
+
+
+class AnotherSampleActionController(controllers.Action):
+    def do_method_forward(self):
+        return 'Another Response'
 
 
 class ShortCircuitedController(controllers.Rest):

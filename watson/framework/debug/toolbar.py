@@ -196,3 +196,4 @@ class Toolbar(object):
             html_body = ''.join(
                 (self.renderer.env.from_string(TEMPLATE).render(panels=self.panels), self.replace_tag))
             response.body = response.body.replace(self.replace_tag, html_body)
+        return response

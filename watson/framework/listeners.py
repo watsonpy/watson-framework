@@ -61,10 +61,6 @@ class DispatchExecute(Base):
         try:
             execute_params = route_match.params
             model_data = controller.execute(**execute_params)
-            if model_data is None:
-                raise InternalServerError(
-                    'The controller {0} did not return any data.'.format(
-                        controller))
             if isinstance(model_data, controllers.ACCEPTABLE_RETURN_TYPES):
                 model_data = {'content': model_data}
             elif isinstance(model_data, Response):
@@ -95,7 +91,7 @@ class DispatchExecute(Base):
             context['response'] = controller.response
             return controller.response, view_model
         except (ApplicationError, NotFoundError, InternalServerError) as exc:
-            raise
+            raise  # pragma: no cover
         except Exception as exc:
             raise InternalServerError(
                 'An error occurred executing controller: {0}'.format(
@@ -180,6 +176,7 @@ class Render(Base):
             response.body = renderer_instance(view_model, context=context)
             if 'Content-Type' not in response.headers:
                 response.headers.add('Content-Type', mime_type)
+            return response
         except Exception as exc:
             raise InternalServerError(
                 'Template ({0}) not found'.format(

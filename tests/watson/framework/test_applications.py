@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pytest import raises
 from watson.di.container import IocContainer
-from watson.framework import applications, config
+from watson.framework import applications, config, exceptions
 from watson.common.datastructures import module_to_dict
 from tests.watson.framework.support import sample_environ, start_response, SampleNonStringCommand
 from tests.watson.framework import sample_config
@@ -91,6 +91,23 @@ class TestHttpApplication(object):
         })
         response = application(sample_environ(PATH_INFO='/'), start_response)
         assert '<h1>Internal Server Error</h1>' in response[0].decode('utf-8')
+
+    def test_no_exception_class(self):
+        app = applications.Http({'exceptions': None})
+        assert app.exception_class is exceptions.ApplicationError
+
+    def test_no_dispatcher_render(self):
+        with raises(KeyError):
+            # No context specified
+            app = applications.Http()
+            app.render(with_dispatcher=False)
+
+    def test_last_exception(self):
+        # occurs when exceptions have been raised from others
+        app = applications.Http()
+        response, view_model = app.exception(
+            last_exception=True, exception=Exception('test'), context={})
+        assert '<h1>Internal Server Error</h1>' in response.body
 
 
 class TestConsoleApplication(object):

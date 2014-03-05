@@ -18,7 +18,7 @@ class Url(ContainerAware):
         if host:
             path = '{0}{1}'.format(host, path)
         if scheme:
-            path = '{0}{1}'.format(scheme, path)
+            path = '{0}://{1}'.format(scheme, path)
         return path
 
 

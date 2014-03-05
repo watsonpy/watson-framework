@@ -93,8 +93,8 @@ class ExceptionHandler(object):
             for var_name, value in frame_vars:
                 try:
                     this_frame['vars'][var_name] = str(value)
-                except:
-                    this_frame['vars'][var_name] = ''
+                except:  # pragma: no cover
+                    this_frame['vars'][var_name] = repr(value)  # pragma: no cover
             frames.append(this_frame)
             tb = tb.tb_next
         frames.reverse()

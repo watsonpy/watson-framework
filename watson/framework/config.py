@@ -11,18 +11,18 @@ from watson.framework import events
 debug = {
     'enabled': False,
     'panels': {
-        'watson.framework.debug.panels.request.Panel': {
+        'watson.framework.debug.panels.Request': {
             'enabled': True
         },
-        'watson.framework.debug.panels.application.Panel': {
+        'watson.framework.debug.panels.Application': {
             'enabled': True
         },
-        'watson.framework.debug.panels.profile.Panel': {
+        'watson.framework.debug.panels.Profile': {
             'enabled': True,
             'max_results': 20,
             'sort': 'time',
         },
-        'watson.framework.debug.panels.framework.Panel': {
+        'watson.framework.debug.panels.Framework': {
             'enabled': True
         },
     }

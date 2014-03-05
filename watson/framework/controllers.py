@@ -16,12 +16,13 @@ ACCEPTABLE_RETURN_TYPES = (str, int, float, bool)
 class Base(ContainerAware, metaclass=abc.ABCMeta):
 
     """The base class for all controllers.
-    """
 
-    """The interface for controller classes.
+    Attributes:
+        __action__ (string): The last action that was called on the controller.
     """
     def execute(self, **kwargs):
         method = self.get_execute_method(**kwargs)
+        self.__action__ = method
         return method(**kwargs) or {}
 
     @abc.abstractmethod

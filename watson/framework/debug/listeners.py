@@ -19,3 +19,4 @@ class Init(ContainerAware):
                     app,
                     self.container.get('jinja2_renderer'))
                 toolbar.register_listeners()
+                return toolbar

@@ -2,6 +2,7 @@
 from io import BytesIO, BufferedReader
 from pytest import raises
 from unittest.mock import Mock
+from watson.di.container import IocContainer
 from watson.events import types
 from watson.http.messages import Request, Response
 from watson.framework import controllers
@@ -101,6 +102,16 @@ class TestBaseHttpController(object):
         base.redirect('test', clear=True)
         assert not base.redirect_vars
 
+    def test_empty_request(self):
+        controller = SampleActionController()
+        assert not controller.request
+
+    def test_no_session(self):
+        controller = SampleActionController()
+        controller.request = Request.from_environ({})
+        with raises(Exception):
+            controller.flash_messages
+
     def test_flash_message(self):
         controller = SampleActionController()
         controller.request = Request.from_environ(sample_environ(), 'watson.http.sessions.Memory')
@@ -117,6 +128,15 @@ class TestBaseHttpController(object):
         context = {'request': request}
         controller.event = types.Event('test', params={'context': context})
         assert controller.do_forward() == 'Response'
+
+    def test_forward_no_method(self):
+        controller = SampleActionController()
+        controller.container = IocContainer()
+        request = Request.from_environ(sample_environ())
+        context = {'request': request}
+        controller.event = types.Event('test', params={'context': context})
+        controller.__action__ = 'do_method_forward'
+        assert controller.do_method_forward() == 'Another Response'
 
 
 class TestActionController(object):

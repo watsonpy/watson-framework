@@ -1,5 +1,5 @@
 [run]
-# omit
+omit = watson/framework/bin.py, watson/framework/support/console/commands/application.py
 
 [html]
 directory = tests/_coverage

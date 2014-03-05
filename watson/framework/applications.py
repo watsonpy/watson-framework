@@ -98,7 +98,7 @@ class Base(ContainerAware, EventDispatcherAware, metaclass=abc.ABCMeta):
         """
         Base.global_app = self
         self.config = config or {}
-        if 'exceptions' not in self.config:
+        if not self.config.get('exceptions'):
             self.exception_class = ApplicationError
         else:
             self.exception_class = imports.load_definition_from_string(
@@ -173,7 +173,7 @@ class Http(Base):
                     params={'context': context,
                             'router': self.container.get('router')}))
             route_match = route_result.first()
-        except ApplicationError as exc:
+        except self.exception_class as exc:
             route_match = None
             response, view_model = self.exception(exception=exc,
                                                   context=context)
@@ -187,7 +187,7 @@ class Http(Base):
                         params={'container': self.container,
                                 'context': context}))
                 response, view_model = dispatch_result.first()
-            except ApplicationError as exc:
+            except self.exception_class as exc:
                 response, view_model = self.exception(
                     exception=exc, context=context)
         # Render the view model or response
@@ -219,6 +219,7 @@ class Http(Base):
         try:
             self.render(view_model=view_model, context=context)
         except Exception as exc:
+            # Triggered when an exception occurs rendering the exception
             kwargs['exception'] = exc
             self.exception(last_exception=exc, **kwargs)
         return response, view_model

@@ -16,6 +16,10 @@ class MyController(object):
     def html_action(self):
         return {}
 
+    @view(format='json')
+    def bool_action(self):
+        return True
+
 
 class TestViewDecorator(object):
 
@@ -32,3 +36,8 @@ class TestViewDecorator(object):
         assert isinstance(controller_response, views.Model)
         assert controller_response.format == 'html'
         assert controller_response.template == 'test'
+
+    def test_view_model_response(self):
+        controller = MyController()
+        controller_response = controller.bool_action()
+        assert controller_response.data['content']
