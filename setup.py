@@ -114,9 +114,6 @@ setup(
         'mako': [
             'mako >= 0.9.1'
         ],
-        '': [
-            'Jinja2 >= 2.7.2'
-        ],
     },
 
     cmdclass={
