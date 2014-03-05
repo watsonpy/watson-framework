@@ -57,7 +57,7 @@ with open(os.path.join(path, 'LICENSE')) as f:
 with open(os.path.join(path, 'README.rst')) as f:
     readme = f.read()
 
-with open(os.path.join(path, 'requirements.txt'), encoding='utf-8') as f:
+with open(os.path.join(path, 'requirements.txt')) as f:
     requirements = f.read().splitlines()
 
 with open(os.path.join(path, 'requirements-test.txt')) as f:
@@ -110,7 +110,13 @@ setup(
     },
     install_requires=requirements,
     extras_require={
-        'test': test_requirements
+        'test': test_requirements,
+        'mako': [
+            'mako >= 0.9.1'
+        ],
+        '': [
+            'Jinja2 >= 2.7.2'
+        ],
     },
 
     cmdclass={
