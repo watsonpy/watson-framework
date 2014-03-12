@@ -269,21 +269,21 @@ class FlashMessagesContainer(object):
         """
         self.session = session
         if self.session_key in self.session:
-            self.messages = self.session[self.session_key].messages
+            self.messages = self.session[self.session_key]
         else:
             self.clear()
-        self.session[self.session_key] = self
 
-    def add(self, message, namespace='info'):
+    def add(self, message, namespace='info', write_to_session=True):
         """Adds a flash message within the specified namespace.
 
         Args:
             message (string): The message to add to the container.
             namespace (string): The namespace to sit the message in.
         """
-        if namespace not in self.messages:
-            self.messages[namespace] = []
-        self.messages[namespace].append(message)
+        self.messages.setdefault(namespace, []).append(message)
+        if write_to_session:
+            # ensure that the flash messages are written to the session
+            self.__write_to_session()
 
     def add_messages(self, messages, namespace='info'):
         """Adds a list of messages to the specified namespace.
@@ -293,7 +293,8 @@ class FlashMessagesContainer(object):
             namespace (string): The namespace to sit the messages in.
         """
         for message in messages:
-            self.add(message, namespace)
+            self.add(message, namespace, write_to_session=False)
+        self.__write_to_session()
 
     def clear(self):
         """Clears the flash messages from the container and session.
@@ -304,6 +305,10 @@ class FlashMessagesContainer(object):
         with ignored(KeyError):
             del self.session[self.session_key]
         self.messages = collections.OrderedDict()
+        self.__write_to_session()
+
+    def __write_to_session(self):
+        self.session[self.session_key] = self.messages
 
     # Internals
 
@@ -321,7 +326,7 @@ class FlashMessagesContainer(object):
         return len(self.messages)
 
     def __repr__(self):
-        return '<{0} messages:{1}>'.format(get_qualified_name(self), len(self))
+        return '<{0} namespaces:{1}>'.format(get_qualified_name(self), len(self))
 
 
 class Action(Base, HttpMixin):
@@ -345,6 +350,7 @@ class Action(Base, HttpMixin):
 
     def get_execute_method(self, **kwargs):
         method_name = kwargs.get('action', 'index') + '_action'
+        self.__action__ = method_name
         return getattr(self, method_name)
 
     def get_execute_method_path(self, **kwargs):

@@ -5,6 +5,7 @@ from unittest.mock import Mock
 from watson.di.container import IocContainer
 from watson.events import types
 from watson.http.messages import Request, Response
+from watson.http import sessions
 from watson.framework import controllers
 from watson.routing.routers import DictRouter
 from tests.watson.framework.support import SampleActionController, SampleRestController, sample_environ
@@ -195,13 +196,23 @@ class TestFlashMessageContainer(object):
         container = controllers.FlashMessagesContainer(session_data)
         assert len(container) == 0
         assert repr(
-            container) == '<watson.framework.controllers.FlashMessagesContainer messages:0>'
+            container) == '<watson.framework.controllers.FlashMessagesContainer namespaces:0>'
 
     def test_add_messages(self):
         session_data = {}
         container = controllers.FlashMessagesContainer(session_data)
         container.add_messages(['testing'])
         assert len(container) == 1
+
+    def test_add_message_write_storage(self):
+        session = sessions.File(id=1234)
+        session.destroy()
+        container = controllers.FlashMessagesContainer(session)
+        assert len(session['flash_messages']) == 0
+        container.add('Test')
+        assert len(session['flash_messages']) == 1
+        container.clear()
+        assert len(session['flash_messages']) == 0
 
     def test_set_existing_container(self):
         existing_container = controllers.FlashMessagesContainer({})
