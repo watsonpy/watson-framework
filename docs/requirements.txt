@@ -1,7 +1,7 @@
 sphinxcontrib-napoleon
 Pygments == 1.6
 Jinja2 == 2.7.2
-watson-common >= 1.1.0
+watson-common >= 1.1.1
 watson-cache >= 1.0.0
 watson-console >= 1.0.0
 watson-di >= 2.0.0
