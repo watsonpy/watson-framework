@@ -136,7 +136,7 @@ Flash messaging is a way to send messages between requests. For example, a user 
     <html>
         <head></head>
         <body>
-            {% for namespace, message in get_flash_messages() %}
+            {% for namespace, message in flash_messages() %}
             <div class="{{ namespace }}">{{ message }}</div>
             {% endfor %}
             {{ form.open() }}
