@@ -28,7 +28,7 @@ def view(template=None, format=None):
     def decorator(func):
         def wrapper(self, *args, **kwargs):
             controller_response = func(self, *args, **kwargs)
-            if not controller_response:
+            if controller_response is None:
                 controller_response = {}
             if isinstance(controller_response, controllers.ACCEPTABLE_RETURN_TYPES):
                 controller_response = {'content': controller_response}

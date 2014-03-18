@@ -9,7 +9,7 @@ class Model(object):
 
     def __init__(self, data=None, template=None, format=None):
         self.template = template
-        self.data = data or {}
+        self.data = {} if data is None else data
         self.format = format
 
     def __repr__(self):
