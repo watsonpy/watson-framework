@@ -4,7 +4,7 @@ import stat
 import sys
 from wsgiref import util
 from string import Template
-from watson.common.contextmanagers import ignored
+from watson.common.contextmanagers import suppress
 from watson.common.imports import load_definition_from_string
 from watson.console import ConsoleError, colors
 from watson.console import command
@@ -146,7 +146,7 @@ class RunTests(command.Base, ContainerAware):
                 test_runner = 'pytest'
                 cli_args = '--cov {0}'.format(app_module)
             except:
-                with ignored(ImportError):
+                with suppress(ImportError):
                     import nose
                     test_runner = 'nose'
                     cli_args = '--cover-package={0}'.format(app_module)

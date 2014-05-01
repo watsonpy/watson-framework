@@ -7,7 +7,7 @@ from watson.events import types
 from watson.framework import events
 from watson.http.messages import Response, Request
 from watson.common.imports import get_qualified_name
-from watson.common.contextmanagers import ignored
+from watson.common.contextmanagers import suppress
 
 
 ACCEPTABLE_RETURN_TYPES = (str, int, float, bool)
@@ -302,7 +302,7 @@ class FlashMessagesContainer(object):
         This is called automatically after the flash messages have been
         iterated over.
         """
-        with ignored(KeyError):
+        with suppress(KeyError):
             del self.session[self.session_key]
         self.messages = collections.OrderedDict()
         self.__write_to_session()
@@ -343,7 +343,7 @@ class Action(Base, HttpMixin):
     """
     def execute(self, **kwargs):
         actual_kwargs = kwargs.copy()
-        with ignored(Exception):
+        with suppress(Exception):
             del actual_kwargs['action']
         method = self.get_execute_method(**kwargs)
         return method(**actual_kwargs) or {}
