@@ -9,7 +9,7 @@ class TestFilters(object):
         assert filters.get_qualified_name(self) == 'tests.watson.framework.support.jinja2.test_filters.TestFilters'
 
     def test_label(self):
-        field = fields.Text(label='Test', name='test')
+        field = fields.Text(label='Test', name='test', definition=False)
         assert filters.label(field) == '<label for="test">Test</label><input id="test" name="test" type="text" />'
 
     def test_merge_query(self):

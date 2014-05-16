@@ -348,13 +348,19 @@ class Action(Base, HttpMixin):
         method = self.get_execute_method(**kwargs)
         return method(**actual_kwargs) or {}
 
+    def get_action(self, **kwargs):
+        action = kwargs.get('action')
+        if not action:
+            action = 'index'
+        return action
+
     def get_execute_method(self, **kwargs):
-        method_name = kwargs.get('action', 'index') + '_action'
+        method_name = self.get_action(**kwargs) + '_action'
         self.__action__ = method_name
         return getattr(self, method_name)
 
     def get_execute_method_path(self, **kwargs):
-        template = re.sub('.-', '_', kwargs.get('action', 'index').lower())
+        template = re.sub('.-', '_', self.get_action(**kwargs).lower())
         return [self.__class__.__name__.lower(), template]
 
 
