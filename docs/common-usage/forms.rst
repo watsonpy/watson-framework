@@ -15,7 +15,22 @@ Forms are defined in a declarative way within Watson. This means that you only n
         password = fields.Password(label='Password')
         submit = fields.Submit(value='Login', button_mode=True)
 
-Which when implemented in a view would output:
+Which when implemented in a view would convert:
+
+
+.. code-block:: html
+
+    <html>
+        <body>
+            {{ form.open() }}
+            {{ form.username.render_with_label() }}
+            {{ form.password.render_with_label() }}
+            {{ form.submit }}
+            {{ form.close() }}
+        </body>
+    </html>
+
+into...
 
 .. code-block:: html
 
@@ -91,13 +106,19 @@ These values can then be retrieved by:
 
 .. code-block:: python
 
-    form.username.value  # Simon
+    form.username  # Simon
+
+Direct access to the form field can be made by:
+
+.. code-block:: python
+
+    form.fields['username']
 
 If the field has been through the validation/filter process, you can still retrieve the original value that was submitted by:
 
 .. code-block:: python
 
-    form.username.original_value  # Simon
+    form.fields['username'].original_value  # Simon
 
 Binding an object to the form
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
