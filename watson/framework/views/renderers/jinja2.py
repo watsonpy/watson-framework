@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib
+from pathlib import Path
 import types
 import jinja2
 from watson.common import datastructures
@@ -311,6 +312,6 @@ class Renderer(abc.Renderer):
 
     def __call__(self, view_model, context=None):
         template = self._env.get_template(
-            '{0}.{1}'.format(view_model.template,
+            '{0}.{1}'.format(Path(view_model.template).as_posix(),
                              self.config['extension']))
         return template.render(context=context or {}, **view_model.data)
