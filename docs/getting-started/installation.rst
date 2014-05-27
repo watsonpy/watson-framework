@@ -29,8 +29,8 @@ from your CLI and then enter the following:
 
 .. code-block:: python
 
-   >>> import watson
-   >>> print(watson.__version__)
+   >>> import watson.framework
+   >>> print(watson.framework.__version__)
    >>> # latest watson version will be printed here
 
 Once you've got Watson installed, head on over to the :ref:`your_first_application` area to learn how to create your first web application.
