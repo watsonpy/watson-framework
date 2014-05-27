@@ -137,6 +137,6 @@ You will also want to make sure that you unit test your application, and you can
 
 All tests are located under the tests directory. For example the demo unit test is located at tests/[app name]/controllers/test_index.py.
 
-Watson supports both nose and `py.test`_ for use with the runtests command.
+Watson supports both nose and `py.test`_ for use with the runtests command and one of these is required to run application test suites.
 
 .. _py.test: http://pytest.org/latest/
