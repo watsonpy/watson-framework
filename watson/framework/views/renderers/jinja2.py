@@ -311,6 +311,6 @@ class Renderer(abc.Renderer):
 
     def __call__(self, view_model, context=None):
         template = self._env.get_template(
-            '{0}.{1}'.format(view_model.template,
+            '{0}.{1}'.format(view_model.template.replace('\\', '/'),
                              self.config['extension']))
         return template.render(context=context or {}, **view_model.data)
