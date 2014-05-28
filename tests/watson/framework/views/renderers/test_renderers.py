@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from watson.framework.views.renderers.xml import Renderer as Xml
 from watson.framework.views.renderers.json import Renderer as Json
-from watson.framework.views.renderers.jinja2 import Renderer as Jinja2
+from watson.framework.views.renderers.jinja2 import Renderer as Jinja2, template_to_posix_path
 from watson.framework import applications
 from tests.watson.framework.support import sample_view_model
 
@@ -31,3 +31,7 @@ class TestJinja2Renderer(object):
         renderer_config = app.config['views']['renderers']['jinja2']['config']
         renderer = Jinja2(config=renderer_config, application=app)
         assert renderer._debug_mode
+
+    def test_posix_path(self):
+        assert template_to_posix_path('some/template') == 'some/template'
+        assert template_to_posix_path('some\\template', sep='\\') == 'some/template'

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import importlib
+import os
 import types
 import jinja2
 from watson.common import datastructures
@@ -271,6 +272,12 @@ TEMPLATES = {
 }
 
 
+def template_to_posix_path(template, sep=None):
+    if not sep:
+        sep = os.path.sep
+    return template.replace(sep, '/')
+
+
 class Renderer(abc.Renderer):
     _env = None
     _debug_mode = False
@@ -311,6 +318,6 @@ class Renderer(abc.Renderer):
 
     def __call__(self, view_model, context=None):
         template = self._env.get_template(
-            '{0}.{1}'.format(view_model.template,
+            '{0}.{1}'.format(template_to_posix_path(view_model.template),
                              self.config['extension']))
         return template.render(context=context or {}, **view_model.data)
