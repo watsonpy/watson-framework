@@ -121,12 +121,12 @@ class TestConsoleApplication(object):
             'commands': ['tests.watson.framework.support.SampleStringCommand',
                          SampleNonStringCommand]
         })
-        assert len(application.config['commands']) == 6
+        assert len(application.config['commands']) == 4
 
     def test_execute_command(self):
         application = applications.Console({
             'commands': ['tests.watson.framework.support.SampleStringCommand',
                          SampleNonStringCommand]
-        }, ['py.test', 'string'])
-        assert application() == 'Executed!'
+        })
+        assert application(['py.test', 'string', 'execute']) == 'Executed!'
         assert not application.get_command('test')

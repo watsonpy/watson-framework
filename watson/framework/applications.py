@@ -249,16 +249,16 @@ class Console(Base):
     """
     runner = None
 
-    def __init__(self, config=None, argv=None):
+    def __init__(self, config=None):
         super(Console, self).__init__(config)
         self.config = dict_deep_update({
             'commands': find_commands_in_module(DefaultConsoleCommands)
         }, self.config)
-        self.runner = Runner(argv, commands=self.config.get('commands'))
+        self.runner = Runner(commands=self.config.get('commands'))
         self.runner.get_command = self.get_command
 
-    def run(self):
-        return self.runner()
+    def run(self, args=None):
+        return self.runner(args)
 
     def get_command(self, command_name):
         # overrides the runners get_command method

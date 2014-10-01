@@ -154,6 +154,8 @@ TEMPLATES = {
         {% endif %}
         <dt>Request:</dt>
         <dd>{{ request().url }}</dd>
+        <dt>Route:</dt>
+        <dd>{% if context['route_match'] %}{{ context['route_match'].route.name }}{% endif %}</dd>
         <dt>Method:</dt>
         <dd>{{ request().method }}</dd>
         <dt>Session Id:</dt>

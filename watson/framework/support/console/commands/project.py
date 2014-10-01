@@ -5,37 +5,46 @@ import sys
 from wsgiref import util
 from string import Template
 from watson.common.contextmanagers import suppress
-from watson.common.imports import load_definition_from_string
-from watson.console import ConsoleError, colors
-from watson.console import command
+from watson.console import ConsoleError, colors, command
+from watson.console.decorators import arg
 from watson.di import ContainerAware
 from watson.http.messages import Request
-from watson.dev.server import make_dev_server
 
 
-class CreateApplication(command.Base, ContainerAware):
-    name = 'newproject'
-    help = 'Creates a new project, defaults to the current working directory.'
-    arguments = [
-        {'dest': 'project_name', 'help': 'The name of the project to create.'},
-        {'dest': 'app_name', 'help': 'The name of the application to create.'},
-        (('-d', '--dir'), {'help': 'The directory to create the project in.'}),
-        (('-o', '--override'),
-         {'action': 'store_const', 'help': 'Override any existing project in the path.', 'const': 1}),
-    ]
+class Project(command.Base, ContainerAware):
+    """Creating and maintaining Watson projects.
 
-    def execute(self):
-        if not self.parsed_args.project_name:
-            raise ConsoleError('No project name specified')
-        if not self.parsed_args.app_name:
-            raise ConsoleError('No app name specified')
-        project_name = self.parsed_args.project_name
-        app_name = self.parsed_args.app_name
-        if self.parsed_args.dir:
-            root = os.path.abspath(self.parsed_args.dir)
+    Example:
+
+    .. code-block::
+
+        ./console.py dev runserver
+    """
+
+    __ioc_definition__ = {
+        'property': {
+            'router': 'router'
+        }
+    }
+
+    @arg('override', action='store_const', const=1, optional=True)
+    @arg('dir', optional=True)
+    def new(self, name, app_name, dir, override):
+        """Creates a new project, defaults to the current working directory.
+
+        Args:
+            name: The name of the project
+            app_name: The name of the application to create
+            dir: The directory to create the project in
+            override: Override any existing project in the path
+        """
+        if dir:
+            root = os.path.abspath(dir)
+            if not os.path.exists(root):
+                raise ConsoleError('Directory {} not found'.format(root))
         else:
             root = os.getcwd()
-        basepath = os.path.join(root, project_name)
+        basepath = os.path.join(root, name)
         paths = [
             basepath,
             os.path.join(basepath, app_name),
@@ -85,7 +94,7 @@ class CreateApplication(command.Base, ContainerAware):
             try:
                 os.mkdir(path)
             except:
-                if not self.parsed_args.override:
+                if not override:
                     raise ConsoleError(
                         'Project already exists at {0}'.format(basepath))
         for filename, contents in files:
@@ -93,49 +102,19 @@ class CreateApplication(command.Base, ContainerAware):
                 with open(filename, 'w', encoding='utf-8') as file:
                     file.write(
                         Template(
-                            contents).safe_substitute(
-                                app_name=app_name))
+                            contents).safe_substitute(app_name=app_name))
             except:
-                if not self.parsed_args.override:
+                if not override:
                     raise ConsoleError(
                         'File {0} already exists.'.format(filename))
         st = os.stat(files[-1][0])
         os.chmod(files[-1][0], st.st_mode | stat.S_IEXEC)
+        self.write('Project {} created at {}'.format(name, root))
 
-
-class RunDevelopmentServer(command.Base, ContainerAware):
-    name = 'rundev'
-    help = 'Runs the development server for the current application.'
-    arguments = [
-        (('-h', '--host'), {'help': 'The host to bind to.'}),
-        (('-p', '--port'), {'help': 'The port to run on'}),
-    ]
-
-    def execute(self):
-        app_dir = os.environ['APP_DIR']
-        app_module = os.environ['APP_MODULE']
-        script_dir = os.environ['SCRIPT_DIR']
-        public_dir = os.environ['PUBLIC_DIR']
-        os.chdir(app_dir)
-        app = load_definition_from_string('{0}.app.application'.format(
-            app_module))
-        kwargs = {
-            'app': app,
-            'script_dir': script_dir,
-            'public_dir': public_dir,
-        }
-        if self.parsed_args.host:
-            kwargs['host'] = self.parsed_args.host
-        if self.parsed_args.port:
-            kwargs['port'] = int(self.parsed_args.port)
-        make_dev_server(**kwargs)
-
-
-class RunTests(command.Base, ContainerAware):
-    name = 'runtests'
-    help = 'Runs the unit tests for the project.'
-
-    def execute(self):
+    @arg()
+    def test(self):
+        """Runs the unit tests for the project.
+        """
         try:
             app_module = os.environ['APP_MODULE']
             test_runner = None
@@ -158,63 +137,65 @@ class RunTests(command.Base, ContainerAware):
         except:
             _no_application_error()
 
+    @arg('path', optional=True)
+    @arg('method', optional=True)
+    @arg('format', optional=True)
+    @arg('server', optional=True)
+    def routes(self, path, method, format, server):
+        """Aids in the debugging of routes associated.
 
-class Routes(command.Base, ContainerAware):
-    name = 'routes'
-    help = 'Aids in the debugging of routes associated.'
-    arguments = [
-        (('-u', '--url'),
-         {'help': 'Validate the specified url against the router.', 'required': False}),
-        (('-m', '--method'),
-         {'help': 'The http request method.', 'required': False}),
-        (('-f', '--format'),
-         {'help': 'The http request format.', 'required': False}),
-        (('-s', '--server'), {'help': 'The hostname.', 'required': False}),
-    ]
-
-    def execute(self):
+        Args:
+            path: Validate the specified path against the router
+            method: The http request method
+            format: The http request format
+            server: The hostname of the request
+        """
         try:
-            router = self.container.get('router')
+            router = self.router
             if not router.routes:
                 raise ConsoleError(
                     'There are no routes associated with the application.')
-            if self.parsed_args.url:
+            if path:
                 environ = {}
                 util.setup_testing_defaults(environ)
+                server = server or '127.0.0.1'
                 environ.update({
-                    'REQUEST_METHOD': self.parsed_args.method or 'GET',
-                    'HTTP_ACCEPT': self.parsed_args.format or 'text/html',
-                    'PATH_INFO': self.parsed_args.url,
-                    'SERVER_NAME': self.parsed_args.server or '127.0.0.1'
+                    'REQUEST_METHOD': method or 'GET',
+                    'HTTP_ACCEPT': format or 'text/html',
+                    'PATH_INFO': path,
+                    'SERVER_NAME': server,
+                    'HTTP_HOST': server
                 })
                 request = Request.from_environ(environ)
-                matches = router.matches(request)
+                matches = [match for match in router.matches(request)]
+
                 if matches:
-                    sys.stdout.write(
-                        colors.header('Displaying {0} matching routes for the application:\n'.format(len(matches))))
+                    longest_route = max([match.route.name for match in matches], key=len)
+                    self.write(
+                        colors.header('Displaying {} matching routes for {}:\n'.format(
+                            len(matches), request.url)))
                     for match in matches:
-                        sys.stdout.write(
-    '{0}\t\t\{1}\t\t{2}\n'.format(
-        colors.ok_green(
-            match.route.name),
-             match.route.path,
-             match.route.regex.pattern))
+                        route = match.route
+                        self.write('{0}\t{1}\n'.format(
+                            route.name.rjust(len(longest_route)), route.path))
                 else:
                     raise ConsoleError('There are no matching routes.')
             else:
-                sys.stdout.write(
-                    colors.header('Displaying {0} routes for the application:\n'.format(len(router))))
+                self.write(colors.header('Displaying {0} routes for the application:\n'.format(len(router))))
+                longest_route = max(router, key=len)
                 for name, route in router:
-                    sys.stdout.write('{0}\t\t{1}\n'.format(name, route.path))
+                    self.write('{0}\t{1}\n'.format(
+                        name.rjust(len(longest_route[0])), route.path))
         except ConsoleError:
             raise
-        except:
+        except Exception as e:
+            raise e
             _no_application_error()
 
 
 def _no_application_error():
     raise ConsoleError(
-    'No watson application can be found, are you sure you\'re in the correct directory?')
+        'No watson application can be found, are you sure you\'re in the correct directory?')
 
 
 BLANK_PY_TEMPLATE = """# -*- coding: utf-8 -*-

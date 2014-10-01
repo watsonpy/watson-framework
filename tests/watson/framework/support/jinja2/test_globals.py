@@ -13,16 +13,14 @@ class TestGlobals(object):
                 }
             }
         })
-        u = url()
-        u.container = app.container
+        u = url(router=app.container.get('router'))
         assert u('home') == '/'
         assert u('home', host='127.0.0.1') == '127.0.0.1/'
         assert u('home', host='127.0.0.1', scheme='https') == 'https://127.0.0.1/'
 
     def test_config(self):
         app = applications.Http()
-        c = config()
-        c.container = app.container
+        c = config(application=app)
         assert c()['views']
 
     def test_request(self):

@@ -7,7 +7,7 @@ Your First Application
 Directory Structure
 -------------------
 
-Watson has a preferred directory structure for it's applications which can be created automatically by the ``watson-console.py newproject [project name] [app name]`` command.
+Watson has a preferred directory structure for it's applications which can be created automatically by the ``watson-console.py project new [project name] [app name]`` command.
 
 .. code-block:: bash
 
@@ -35,16 +35,16 @@ Watson has a preferred directory structure for it's applications which can be cr
 
 
 .. tip::
-    For example **watson-console.py newproject sample.com.local sample** creates a new project named sample.com.local and an application package named sample
+    For example **watson-console.py project new sample.com.local sample** creates a new project named sample.com.local and an application package named sample
 
 The application will be created within the current working directory, unless you override it with the ``-d DIR`` option.
 
-Once the structure has been created, you can use ``./console.py`` to perform related console commands from within the application, for example: ``./console.py routes`` to display a list of routes for the application.
+Once the structure has been created, you can use ``./console.py`` to perform related console commands from within the application, for example: ``./console.py project routes`` to display a list of routes for the application.
 
 Configuration
 -------------
 
-By creating your project using the **newproject** command Watson will generate 3 configuration files for your application as well as a route file.
+By creating your project using the **project new** command Watson will generate 3 configuration files for your application as well as a route file.
 
 1. config.py
 2. dev.py.dist
@@ -83,7 +83,7 @@ routes.py contains all the routes associated with the application. For more deta
 Putting it all together
 -----------------------
 
-Most likely you'll want to develop locally first and then deploy to a production environment later. Watson comes packaged with a command to run a local development server which will automatically reload when changes are saved. To run the server simply change to the project directory and run ``./console.py rundev`` and then visit http://127.0.0.1:8000 in your favorite browser where you'll be greeted with a page saying welcome to Watson.
+Most likely you'll want to develop locally first and then deploy to a production environment later. Watson comes packaged with a command to run a local development server which will automatically reload when changes are saved. To run the server simply change to the project directory and run ``./console.py dev runserver`` and then visit http://127.0.0.1:8000 in your favorite browser where you'll be greeted with a page saying welcome to Watson.
 
 A initial controller is created for you in app_name/controllers/index.py which will response to a request for / in your browser (from the above routes.py definition)
 
@@ -133,10 +133,10 @@ The presentation layer (or view) is matched based on lowercased versions of the 
 
 For more information on views, check out the :ref:`key_concepts_mvc` Key Concept area.
 
-You will also want to make sure that you unit test your application, and you can do that by running ``./console.py runtests``. A simple unit test is already included when the **newproject** command is run. It is designed to fail so make sure you go in and make the required changes for it to pass!
+You will also want to make sure that you unit test your application, and you can do that by running ``./console.py project test``. A simple unit test is already included when the **project new** command is run. It is designed to fail so make sure you go in and make the required changes for it to pass!
 
 All tests are located under the tests directory. For example the demo unit test is located at tests/[app name]/controllers/test_index.py.
 
-Watson supports both nose and `py.test`_ for use with the runtests command and one of these is required to run application test suites.
+Watson supports both nose and `py.test`_ for use with the ``project test`` command and one of these is required to run application test suites.
 
 .. _py.test: http://pytest.org/latest/

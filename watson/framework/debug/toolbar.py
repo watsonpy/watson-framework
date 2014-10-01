@@ -75,6 +75,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     width: 100%;
     border-spacing: 0;
     border-collapse: collapse;
+    font-size: inherit;
 }
 .watson-debug-toolbar__panel table th {
     padding: 8px 4px;
@@ -135,7 +136,8 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         toolbar = document.querySelector('.watson-debug-toolbar__container'),
         toggle = document.getElementById('DebugToolbarToggle'),
         buttons = toolbar.querySelectorAll('.watson-debug-toolbar__buttons a:not([id])'),
-        panels = toolbar.querySelectorAll('.watson-debug-toolbar__panel');
+        panels = toolbar.querySelectorAll('.watson-debug-toolbar__panel'),
+        panelOpen = false;
     body.style.paddingBottom = parseFloat(body.style.paddingBottom) + parseFloat(toolbar.offsetHeight);
 
     function removeActiveClasses() {
@@ -148,7 +150,12 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         }
     }
     toggle.addEventListener('click', function() {
+        if (!panelOpen) {
+            toolbar.parentNode.removeChild(toolbar);
+            return;
+        }
         removeActiveClasses();
+        panelOpen = false;
     });
     for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener('click', function() {
@@ -157,6 +164,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
             addClass(this, 'active');
             var panel = this.getAttribute('data-panel');
             addClass(toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]'), 'active');
+            panelOpen = true;
         });
     }
 </script>

@@ -1,0 +1,8 @@
+3.0.0
+
+- BC: Moved commands into own namespace (following watson.console 2.0.0), now accessed via ./console.py dev runserver, and ./console.py project new|routes|test (see ./console.py -h for more information)
+- framework.applications.Console now accepts the argv args in the run() method instead of __init__
+- Close the debug toolbar entirely if it's closed already
+- RouteMatch information included in debug toolbar
+- Bugfix for flashmessages in the view
+- Jinja2 global functions and classes no longer use the container as a service locator

@@ -2,6 +2,7 @@
 # Support functions, classes
 from wsgiref import util
 from watson.console import command
+from watson.console.decorators import cmd
 from watson.http.messages import Response
 from watson.framework import controllers
 from watson.framework.views import Model
@@ -94,5 +95,6 @@ class SampleNonStringCommand(command.Base):
 class SampleStringCommand(command.Base):
     name = 'string'
 
+    @cmd()
     def execute(self):
         return 'Executed!'

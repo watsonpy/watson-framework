@@ -12,8 +12,9 @@ class TestInit(object):
                 'toolbar': {'bar': ''}
             }
         })
+        renderer = app.container.get('jinja2_renderer')
         event = types.Event('test', target=app)
-        listener = listeners.Init()
+        listener = listeners.Init(renderer=renderer)
         listener.container = app.container
         tb = listener(event)
         assert isinstance(tb, toolbar.Toolbar)
