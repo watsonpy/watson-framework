@@ -91,8 +91,7 @@ A initial controller is created for you in app_name/controllers/index.py which w
 
 .. code-block:: python
 
-    from watson import __version__
-    from watson.framework import controllers
+    from watson.framework import controllers, __version__
 
     class Index(controllers.Rest):
         def GET(self):
@@ -104,8 +103,7 @@ An alternative would be to use an Action controller instead. This would be repre
 
 .. code-block:: python
 
-    from watson import __version__
-    from watson.framework import controllers
+    from watson.framework import controllers, __version__
 
     class Index(controllers.Action):
         def index_action(self):
