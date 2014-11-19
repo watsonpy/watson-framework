@@ -9,15 +9,6 @@ class Init(ContainerAware):
     """Attaches itself to the applications INIT event and initializes the toolbar.
     """
 
-    __ioc_definition__ = {
-        'init': {
-            'renderer': 'jinja2_renderer'
-        }
-    }
-
-    def __init__(self, renderer):
-        self.renderer = renderer
-
     def __call__(self, event):
         app = event.target
         if isinstance(app, applications.Http):
@@ -26,6 +17,6 @@ class Init(ContainerAware):
                 toolbar = Toolbar(
                     app.config['debug'],
                     app,
-                    self.renderer)
+                    self.container.get('jinja2_renderer'))
                 toolbar.register_listeners()
                 return toolbar
