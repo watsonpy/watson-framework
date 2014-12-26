@@ -45,6 +45,9 @@ correctly, these include:
 -  `Memcached`_
     - pip package: python3-memcached
 
+-  `Redis`_
+    - pip package: redis
+
 Notes about these dependencies can be found within the relevant
 documentation in the :ref:`reference_library`.
 
