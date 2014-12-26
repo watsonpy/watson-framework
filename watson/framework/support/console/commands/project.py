@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from pprint import pprint
 import stat
 import sys
 from wsgiref import util
@@ -23,7 +24,8 @@ class Project(command.Base, ContainerAware):
 
     __ioc_definition__ = {
         'property': {
-            'router': 'router'
+            'router': 'router',
+            'application_config': 'application.config'
         }
     }
 
@@ -110,6 +112,12 @@ class Project(command.Base, ContainerAware):
         st = os.stat(files[-1][0])
         os.chmod(files[-1][0], st.st_mode | stat.S_IEXEC)
         self.write('Project {} created at {}'.format(name, root))
+
+    @arg()
+    def config(self):
+        """Prints out the applications configuration.
+        """
+        pprint(self.application_config)
 
     @arg()
     def test(self):
