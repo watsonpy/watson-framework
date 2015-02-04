@@ -123,6 +123,8 @@ class Project(command.Base, ContainerAware):
     def test(self):
         """Runs the unit tests for the project.
         """
+        current_directory = os.getcwd()
+        os.chdir(os.path.join(current_directory, '..'))
         try:
             app_module = os.environ['APP_MODULE']
             test_runner = None
@@ -144,6 +146,7 @@ class Project(command.Base, ContainerAware):
                     "You must install either 'nose' or 'py.test' to run the unit tests.")
         except:
             _no_application_error()
+        os.chdir(current_directory)
 
     @arg('path', optional=True)
     @arg('method', optional=True)
