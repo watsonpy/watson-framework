@@ -20,7 +20,7 @@ Action controller methods are defined explicitly within the applications route c
     routes = {
         'index': {
             'path': '/',
-            'defaults': {'controller': 'app_name.controllers.Public', 'action': 'index'}
+            'options': {'controller': 'app_name.controllers.Public', 'action': 'index'}
         },
     }
 
@@ -46,7 +46,7 @@ RESTful controller methods are based upon the HTTP request method that was made 
     routes = {
         'index': {
             'path': '/',
-            'defaults': {'controller': 'app_name.controllers.User'}
+            'options': {'controller': 'app_name.controllers.User'}
         },
     }
 
