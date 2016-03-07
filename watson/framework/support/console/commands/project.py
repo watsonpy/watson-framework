@@ -292,9 +292,6 @@ CONSOLE_TEMPLATE = """#!/usr/bin/env python
 import os
 import sys
 
-import os
-import sys
-
 SCRIPT_DIR, SCRIPT_FILE = os.path.split(os.path.abspath(__file__))
 os.environ.update({
     'APP_MODULE': '${app_name}',
@@ -303,7 +300,7 @@ os.environ.update({
     'SCRIPT_DIR': SCRIPT_DIR
 })
 try:
-    import watson
+    import watson  # noqa
 except:
     sys.stdout.write('You must have Watson installed, please run `pip install watson-framework`\\n')
     sys.exit(1)
