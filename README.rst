@@ -50,9 +50,9 @@ Using falcon-bench, Watson received the following requests per second (Django an
    :target: https://travis-ci.org/watsonpy/watson-framework
 .. |Coverage Status| image:: https://coveralls.io/repos/watsonpy/watson-framework/badge.png
    :target: https://coveralls.io/r/watsonpy/watson-framework
-.. |Version| image:: https://pypip.in/v/watson-framework/badge.png
+.. |Version| image:: http://badge.kloud51.com/pypi/v/watson-framework.png
    :target: https://pypi.python.org/pypi/watson-framework/
-.. |Downloads| image:: https://pypip.in/d/watson-framework/badge.png
+.. |Downloads| image:: http://badge.kloud51.com/pypi/d/watson-framework.png
    :target: https://pypi.python.org/pypi/watson-framework/
-.. |Licence| image:: https://pypip.in/license/watson-framework/badge.png
+.. |Licence| image:: http://badge.kloud51.com/pypi/license/watson-framework.png
    :target: https://pypi.python.org/pypi/watson-framework/
