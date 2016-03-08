@@ -302,11 +302,11 @@ os.environ.update({
 try:
     import watson  # noqa
 except:
-    sys.stdout.write('You must have Watson installed, please run `pip install watson-framework`\\n')
+    sys.stdout.write('You must have Watson installed, please run `pip install watson-framework`\\n')  # noqa
     sys.exit(1)
 
-from watson.framework import applications
-from ${app_name}.config import config
+from watson.framework import applications  # noqa
+from ${app_name}.config import config  # noqa
 
 if __name__ == '__main__':
     os.chdir(os.environ['APP_DIR'])
