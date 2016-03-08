@@ -229,7 +229,7 @@ routes = {
 """
 
 PROD_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
-from ${app_name}.config.routes import routes
+from ${app_name}.config.routes import routes  # noqa
 
 
 debug = {
@@ -238,7 +238,7 @@ debug = {
 """
 
 DEV_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
-from ${app_name}.config.routes import routes
+from ${app_name}.config.routes import routes  # noqa
 
 
 debug = {
