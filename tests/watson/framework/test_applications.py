@@ -3,6 +3,7 @@ from pytest import raises
 from watson.di.container import IocContainer
 from watson.framework import applications, config, exceptions
 from watson.common.datastructures import module_to_dict
+from watson.http.messages import Request
 from tests.watson.framework.support import sample_environ, start_response, SampleNonStringCommand
 from tests.watson.framework import sample_config
 
@@ -104,9 +105,13 @@ class TestHttpApplication(object):
 
     def test_last_exception(self):
         # occurs when exceptions have been raised from others
+        environ = sample_environ()
+        context = {
+            'request': Request.from_environ(environ)
+        }
         app = applications.Http()
         response, view_model = app.exception(
-            last_exception=True, exception=Exception('test'), context={})
+            last_exception=True, exception=Exception('test'), context=context)
         assert '<h1>Internal Server Error</h1>' in response.body
 
 

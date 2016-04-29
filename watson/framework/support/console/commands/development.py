@@ -21,7 +21,8 @@ class Dev(command.Base, ContainerAware):
     """
     @arg('host', optional=True)
     @arg('port', optional=True)
-    def runserver(self, host, port):
+    @arg('noreload', optional=True, default=False)
+    def runserver(self, host, port, noreload):
         """Runs the development server for the current application.
 
         Args:
@@ -44,4 +45,6 @@ class Dev(command.Base, ContainerAware):
             kwargs['host'] = host
         if port:
             kwargs['port'] = int(port)
+        kwargs['noreload'] = True if noreload else False
+
         make_dev_server(**kwargs)
