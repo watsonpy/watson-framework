@@ -307,7 +307,7 @@ try:
     from watson.common import imports
 except:
     sys.stdout.write(
-        'You must have Watson installed, please run `pip install watson-framework`\n')
+        'You must have Watson installed, please run `pip install watson-framework`\\n')
     sys.exit(1)
 
 
