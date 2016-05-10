@@ -8,5 +8,5 @@ watson-di >= 2.1.0
 watson-filters >= 1.0.0
 watson-form >= 3.1.0
 watson-html >= 1.2.0
-watson-routing >= 1.1.0
+watson-routing >= 1.1.1
 watson-validators >= 1.0.1
