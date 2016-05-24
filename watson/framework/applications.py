@@ -156,10 +156,7 @@ class Http(Base):
         application(environ, start_response)
     """
 
-    def run(self, environ, start_response):
-        request = Request.from_environ(environ,
-                                       session_class=self.config['session'].get('class', None),
-                                       session_options=self.config['session'].get('options', None))
+    def __run_inner(self, request):
         context = {
             'request': request
         }
@@ -201,10 +198,21 @@ class Http(Base):
         self.dispatcher.trigger(Event(events.COMPLETE,
                                       target=self,
                                       params={'container': self.container}))
-        return response(start_response)
+        return response
 
-    def __call__(self, *args, **kwargs):
-        return self.run(*args, **kwargs)
+    def run(self, environ, start_response):
+        session = self.config['session']
+        request = Request.from_environ(environ,
+                                       session_class=session.get(
+                                           'class', None),
+                                       session_options=session.get(
+                                           'options', None))
+        try:
+            response = self.__run_inner(request)
+        except Exception as exc:
+            response, view_model = self.exception(
+                exception=exc, context={'request': request})
+        return response(start_response)
 
     def exception(self, last_exception=None, **kwargs):
         event = Event(events.EXCEPTION, target=self, params=kwargs)
