@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import collections
+from pygments.formatters import HtmlFormatter
 from watson.common import imports
 from watson.framework import events
 
 TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 <style type="text/css">
+{{ pygment_styles }}
 .watson-debug-toolbar__container {
     position: fixed;
     bottom: 0;
@@ -98,20 +100,26 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     float: left;
     width: 160px;
     clear: both;
-    padding: 4px 6px;
+    padding: 10px 16px;
     color: #353535;
 }
 .watson-debug-toolbar__panel dd {
     color: inherit;
     margin-bottom: 4px;
-    margin-left: 160px;
-    padding: 4px 6px;
+    margin-left: 180px;
+    padding: 10px;
+}
+.watson-debug-toolbar__resize {
+    cursor: row-resize;
+    height: 1px;
+    color: #353535;
 }
 </style>
 <div class="watson-debug-toolbar__container collapsed">
+    <div class="watson-debug-toolbar__resize"></div>
     <div class="watson-debug-toolbar__inner">
         <div class="watson-debug-toolbar__buttons">
-            <a href="javascript:;" id="DebugToolbarToggle">x</a>
+            <a href="javascript:;" id="DebugToolbarToggle">&times;</a>
             {% for module, panel in panels|dictsort %}
             <a href="javascript:;" data-panel="{{ panel.title }}">{{ panel.title }} <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
             {% endfor %}
@@ -124,29 +132,23 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     </div>
 </div>
 <script type="text/javascript">
-    function removeClass(el, className) {
-        className = ' ' + className;
-        el.className = el.className.replace(className, '');
-    }
-    function addClass(el, className) {
-        removeClass(el, className);
-        el.className += ' ' + className;
-    }
     var body = document.body,
         toolbar = document.querySelector('.watson-debug-toolbar__container'),
         toggle = document.getElementById('DebugToolbarToggle'),
+        toolbarButtonContainer = toolbar.querySelector('.watson-debug-toolbar__buttons'),
         buttons = toolbar.querySelectorAll('.watson-debug-toolbar__buttons a:not([id])'),
         panels = toolbar.querySelectorAll('.watson-debug-toolbar__panel'),
-        panelOpen = false;
+        resizeHandle = toolbar.querySelector('.watson-debug-toolbar__resize'),
+        panelOpen = false, resizingToolbar = false;
     body.style.paddingBottom = parseFloat(body.style.paddingBottom) + parseFloat(toolbar.offsetHeight);
 
     function removeActiveClasses() {
         var i;
         for (i = 0; i < panels.length; i++) {
-            removeClass(panels[i], 'active');
+            panels[i].classList.remove('active');
         }
         for (i = 0; i < buttons.length; i++) {
-            removeClass(buttons[i], 'active');
+            buttons[i].classList.remove('active');
         }
     }
     toggle.addEventListener('click', function() {
@@ -154,19 +156,44 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
             toolbar.parentNode.removeChild(toolbar);
             return;
         }
+        if (toolbar.offsetHeight > 200) {
+            toolbar.removeAttribute('style');
+        }
+        toolbar.classList.add('collapsed');
         removeActiveClasses();
         panelOpen = false;
     });
     for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener('click', function() {
             removeActiveClasses();
-            removeClass(toolbar, 'collapsed');
-            addClass(this, 'active');
+            toolbar.classList.remove('collapsed');
+            this.classList.add('active');
             var panel = this.getAttribute('data-panel');
-            addClass(toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]'), 'active');
+            toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]').classList.add('active');
             panelOpen = true;
         });
     }
+
+    resizeHandle.addEventListener('mousedown', function() {
+        resizingToolbar = true;
+    });
+    document.addEventListener('mousemove', function(evt) {
+        if (resizingToolbar && !toolbar.classList.contains('collapsed')) {
+            var height = (window.innerHeight - evt.clientY);
+            if (height > toolbarButtonContainer.offsetHeight) {
+                var newHeight = height + 'px';
+                toolbar.style.height = newHeight;
+                panels.forEach(function(n, i) {
+                    n.style.height = height - 40 + 'px';
+                });
+            }
+        }
+        evt.stopPropagation();
+        evt.preventDefault();
+    });
+    document.addEventListener('mouseup', function() {
+        resizingToolbar = false;
+    })
 </script>
 """
 
@@ -202,6 +229,9 @@ class Toolbar(object):
         response, view_model = context['response'], event.params['view_model']
         if view_model.format == 'html':
             html_body = ''.join(
-                (self.renderer.env.from_string(TEMPLATE).render(panels=self.panels), self.replace_tag))
+                (self.renderer.env.from_string(TEMPLATE).render(
+                    panels=self.panels,
+                    pygment_styles=HtmlFormatter().get_style_defs('.highlight')
+                    ), self.replace_tag))
             response.body = response.body.replace(self.replace_tag, html_body)
         return response

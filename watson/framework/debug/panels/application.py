@@ -8,7 +8,7 @@ from watson.framework import events
 
 TEMPLATE = """
 <dt>Controller:</dt>
-<dd>{{ controller }}</dd>
+<dd>{{ controller or "&nbsp;" }}</dd>
 <dt>Route:</dt>
 <dd>{{ route_name }}</dd>
 <dt>Template:</dt>
