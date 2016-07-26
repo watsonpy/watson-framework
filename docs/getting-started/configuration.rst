@@ -222,7 +222,7 @@ You can then access the logger from within your app with the following code:
 .. code-block:: python
 
    import logging
-   logging.getLogger(__name__)
+   logger = logging.getLogger(__name__)
    logger.error('Something has gone wrong')
 
 Extending the Configuration
