@@ -215,7 +215,7 @@ class Toolbar(object):
                 panel = imports.load_definition_from_string(
                     module)(settings, renderer, application)
                 panel.register_listeners()
-                self.panels[module] = panel
+                self.panels[panel.title] = panel
 
     def register_listeners(self):
         self.application.dispatcher.add(events.RENDER_VIEW, self.render, -1000)
