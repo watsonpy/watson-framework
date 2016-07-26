@@ -24,6 +24,10 @@ TEMPLATE = """<style>
             <td>{{ time['line'] }}</td>
             <td>{{ time['function_name']|e }}</td>
         </tr>
+        {% else %}
+        <tr>
+            <td colspan="8">Nothing to profile, refresh the page.</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
@@ -32,6 +36,7 @@ TEMPLATE = """<style>
 
 class Panel(abc.Panel):
     title = 'Profile'
+    icon = 'clock-o'
 
     def __init__(self, config, renderer, application):
         super(Panel, self).__init__(config, renderer, application)

@@ -11,6 +11,7 @@ TEMPLATE = """
 <dt>Headers:</dt>
 <dd>
     <table>
+        <thead><tr><th>Key</th><th>Value</th></tr></thead>
     {% for key, value in request.headers|dictsort %}
         <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
     {% endfor %}
@@ -49,6 +50,7 @@ TEMPLATE = """
 
 class Panel(abc.Panel):
     title = 'Request'
+    icon = 'globe'
 
     def render(self):
         return self.renderer.env.from_string(TEMPLATE).render(

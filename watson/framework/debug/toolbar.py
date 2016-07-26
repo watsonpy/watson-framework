@@ -5,6 +5,7 @@ from watson.common import imports
 from watson.framework import events
 
 TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
 <style type="text/css">
 {{ pygment_styles }}
 .watson-debug-toolbar__container {
@@ -13,33 +14,35 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     left: 0;
     width: 100%;
     z-index: 1000;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
     font-size: 12px;
     background: #fff;
     color: #7b7c7e;
-    border-top: 1px solid #c3c3c3;
 }
 .watson-debug-toolbar__buttons {
-    background: #f2f2f2;
-    padding: 8px;
-    border-bottom: 1px solid #c3c3c3;
+    background: #fefefe;
+    border-bottom: 2px solid #d9dcdf;
     position: relative;
 }
 .watson-debug-toolbar__buttons a {
     color: inherit;
     text-decoration: none;
-    padding: 4px 8px;
+    padding: 10px 20px;
     display: inline-block;
-    border-radius: 4px;
+    border-bottom: 2px solid transparent;
 }
 .watson-debug-toolbar__buttons a span {
     color: #aeabab;
     font-weight: bold;
     padding-left: 8px;
 }
+.watson-debug-toolbar__buttons a i {
+    color: #aeabab;
+    margin-right: 6px;
+}
 .watson-debug-toolbar__buttons a.active {
-    background: #dcdcdc;
-    border-color: #c4c4c4;
+    background: #f8f8f9;
+    border-color: #67bde3;
     color: #555;
 }
 .watson-debug-toolbar__container th {
@@ -47,25 +50,24 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 }
 .watson-debug-toolbar__container #DebugToolbarToggle {
     display: inline-block;
-    height: 12px;
-    width: 5px;
-    background: #7b7c7e;
-    border-radius: 14px;
+    background: #5e6a77;
+    border-radius: 100%;
     color: #fff;
     padding-left: 7px;
     line-height: 0.9em;
     position: absolute;
     right: 10px;
     top: 8px;
+    padding: 5px 7px 4px;
 }
 .watson-debug-toolbar__container #DebugToolbarToggle:hover {
     background: #353535;
 }
-
 .watson-debug-toolbar__panel {
     height: 200px;
     display: none;
     overflow: scroll;
+    background: #f1f2f4;
 }
 .watson-debug-toolbar__container.collapsed .watson-debug-toolbar__panel {
     display: none;
@@ -80,28 +82,28 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     font-size: inherit;
 }
 .watson-debug-toolbar__panel table th {
-    padding: 8px 4px;
-    border-right: 1px solid #f1f1f1;
-    background: #7b7c7e;
-    color: #cccbcb;
+    padding: 8px;
+    border-right: 1px solid #9ea5ad;
+    background: #5e6a77;
+    color: #fefefe;
 }
 .watson-debug-toolbar__panel table td {
     font-family: inherit;
     background: #fff;
-    padding: 4px;
+    padding: 4px 8px;
     border-right: 1px solid #f3f3f3;
 }
 .watson-debug-toolbar__panel table tr:nth-of-type(2n) td {
-    background: #f7f7f7;
+    background: #e3e6e9;
 }
 .watson-debug-toolbar__panel dt {
     font-weight: bold;
     font-size: 1.1em;
     float: left;
-    width: 160px;
+    width: 150px;
     clear: both;
     padding: 10px 16px;
-    color: #353535;
+    color: #383F47;
 }
 .watson-debug-toolbar__panel dd {
     color: inherit;
@@ -112,7 +114,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 .watson-debug-toolbar__resize {
     cursor: row-resize;
     height: 1px;
-    color: #353535;
+    background: #dadee1;
 }
 </style>
 <div class="watson-debug-toolbar__container collapsed">
@@ -121,7 +123,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         <div class="watson-debug-toolbar__buttons">
             <a href="javascript:;" id="DebugToolbarToggle">&times;</a>
             {% for module, panel in panels|dictsort %}
-            <a href="javascript:;" data-panel="{{ panel.title }}">{{ panel.title }} <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
+            <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> {{ panel.title }} <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
             {% endfor %}
         </div>
         {% for module, panel in panels|dictsort %}
@@ -231,7 +233,7 @@ class Toolbar(object):
             html_body = ''.join(
                 (self.renderer.env.from_string(TEMPLATE).render(
                     panels=self.panels,
-                    pygment_styles=HtmlFormatter().get_style_defs('.highlight')
+                    pygment_styles=HtmlFormatter(nobackground=True).get_style_defs('.highlight')
                     ), self.replace_tag))
             response.body = response.body.replace(self.replace_tag, html_body)
         return response

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pprint
 import pygments
 from pygments import formatters, lexers
 import resource
@@ -8,7 +7,7 @@ from watson.framework import events
 
 TEMPLATE = """
 <dt>Controller:</dt>
-<dd>{{ controller or "&nbsp;" }}</dd>
+<dd>{{ controller or "None" }}</dd>
 <dt>Route:</dt>
 <dd>{{ route_name }}</dd>
 <dt>Template:</dt>
@@ -20,8 +19,36 @@ TEMPLATE = """
 """
 
 
+def pretty(value, htchar='    ', lfchar='\n', indent=0):
+    """Print out a dictionary as a string.
+    """
+    nlch = lfchar + htchar * (indent + 1)
+    if isinstance(value, dict):
+        items = [
+            nlch + repr(key) + ': ' + pretty(
+                value[key], htchar, lfchar, indent + 1)
+            for key in sorted(value)
+        ]
+        return '{{{}}}'.format((','.join(items) + lfchar + htchar * indent))
+    elif isinstance(value, (list, tuple)):
+        items = [
+            nlch + pretty(item, htchar, lfchar, indent + 1)
+            for item in value
+        ]
+        lchar = '['
+        rchar = ']'
+        if isinstance(value, tuple):
+            lchar = '('
+            rchar = ')'
+        return '{}{}{}'.format(
+            lchar, (','.join(items) + lfchar + htchar * indent), rchar)
+    else:
+        return repr(value)
+
+
 class Panel(abc.Panel):
     title = 'Application'
+    icon = 'cube'
     route_match = None
 
     @property
@@ -56,7 +83,9 @@ class Panel(abc.Panel):
             controller=self.controller,
             template=self.template,
             usage=self.usage,
-            config=pygments.highlight(pprint.pformat(self.application.config), lexers.PythonLexer(), formatters.HtmlFormatter()))
+            config=pygments.highlight(
+                pretty(self.application.config),
+                lexers.PythonLexer(), formatters.HtmlFormatter()))
 
     def render_key_stat(self):
         return '{0}mb'.format(self.usage)

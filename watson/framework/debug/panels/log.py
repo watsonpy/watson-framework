@@ -19,24 +19,32 @@ TEMPLATE = """<style>
 </style>
 <div class="watson-debug-toolbar__panel__log">
 <table>
-    <tr>
-        <th>Time</th>
-        <th>Name</th>
-        <th>Level</th>
-        <th>Message</th>
-        <th>Line</th>
-        <th>File</th>
-    </tr>
-    {% for log in logs %}
-    <tr>
-        <td>{{ log.time }}</td>
-        <td>{{ log.name }}</td>
-        <td>{{ log.levelname|title }}</td>
-        <td>{{ log.getMessage() }}</td>
-        <td>{{ log.lineno }}</td>
-        <td>{{ log.pathname }}</td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Name</th>
+            <th>Level</th>
+            <th>Message</th>
+            <th>Line</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.time }}</td>
+            <td>{{ log.name }}</td>
+            <td>{{ log.levelname|title }}</td>
+            <td>{{ log.getMessage() }}</td>
+            <td>{{ log.lineno }}</td>
+            <td>{{ log.pathname }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">Nothing logged.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 </dd>
 </div>
@@ -68,6 +76,7 @@ logging.root.addHandler(debug_panel_handler)
 
 class Panel(abc.Panel):
     title = 'Logging'
+    icon = 'list-ul'
 
     def render(self):
         output = self.renderer.env.from_string(TEMPLATE).render(
@@ -76,4 +85,4 @@ class Panel(abc.Panel):
         return output
 
     def render_key_stat(self):
-        return '{0}'.format(len(debug_panel_handler.records))
+        return '{0} messages'.format(len(debug_panel_handler.records))

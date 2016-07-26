@@ -5,6 +5,7 @@ import abc
 class Panel(metaclass=abc.ABCMeta):
     data = None
     title = 'Unnamed Panel'
+    icon = 'ellipsis-v'
     event = None
 
     def __init__(self, config, renderer, application):

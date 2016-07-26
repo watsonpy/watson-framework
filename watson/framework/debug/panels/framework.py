@@ -6,7 +6,7 @@ TEMPLATE = """<style>
 .watson-debug-toolbar__panel__framework__event {
     margin: 10px 0;
     font-size: 1.4em;
-    color: #353535;
+    color: #383F47;
 }
 .watson-debug-toolbar__panel__framework table tr td:nth-of-type(2n) {
     width: 10%;
@@ -23,14 +23,18 @@ TEMPLATE = """<style>
 {% for name, event in events|dictsort %}
 <div class="watson-debug-toolbar__panel__framework__event">{{ name }}</div>
 <table>
-    <tr>
-        <th>Callback</th><th>Priority</th><th>Triggered Once</th>
-    </tr>
-    {% for callback, priority, only_once in event %}
-    <tr>
-        <td>{{ callback|get_qualified_name }}</td><td>{{ priority }}</td><td>{{ only_once }}</td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Callback</th><th>Priority</th><th>Triggered Once</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for callback, priority, only_once in event %}
+        <tr>
+            <td>{{ callback|get_qualified_name }}</td><td>{{ priority }}</td><td>{{ only_once }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endfor %}
 </dd>
@@ -40,6 +44,7 @@ TEMPLATE = """<style>
 
 class Panel(abc.Panel):
     title = 'Framework'
+    icon = 'code'
 
     def render(self):
         return self.renderer.env.from_string(TEMPLATE).render(
