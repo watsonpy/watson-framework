@@ -12,8 +12,10 @@ TEMPLATES = {
         <html>
             <head>
                 {% block head %}
+                <meta charset="utf-8" />
+                <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
                 <style type="text/css">
-                    html, body { font-family: Helvetica, Arial, sans-serif }
+                    html, body { font-family: 'Open Sans', Helvetica, Arial, sans-serif }
                     {% block styles %}{% endblock %}
                 </style>
                 {% endblock %}
@@ -67,9 +69,6 @@ TEMPLATES = {
             vertical-align: top;
             color: #333;
         }
-        .watson-stack-frames > tbody > tr:nth-child(3n+1) {
-            background-color: #fff;
-        }
         .watson-stack-frames > tbody > tr {
             background-color: #f5f5f5;
             cursor: pointer;
@@ -78,11 +77,21 @@ TEMPLATES = {
             cursor: default;
             background: #f1ecc2;
         }
+        .watson-stack-frames > tbody > tr:nth-of-type(4n+1) {
+            background-color: #fff;
+        }
+        .watson-stack-frames-vars thead tr th:nth-of-type(1) {
+            width: 20%;
+        }
         .hide {
             display: none;
         }
         table td {
             font-family: "Lucida Console", Monaco, monospace;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-all;
+            word-break: break-word;
         }
         dl {
             margin: 0;
@@ -122,6 +131,7 @@ TEMPLATES = {
             font-family: inherit;
             padding: 2px 0;
             color: inherit;
+            word-wrap: break-word;
         }
         dd table tr > td:first-of-type {
             width: 200px;
@@ -199,9 +209,11 @@ TEMPLATES = {
     </dl>
     <h1>Stack Trace</h1>
     <table class="watson-stack-frames">
+    <thead>
     <tr>
         <th>Line</th><th>File</th><th>Function</th><th>Code</th>
     </tr>
+    </thead>
     {% for frame in frames %}
     <tr class="watson-stack-frames-frame">
         <td>{{ frame.line }}</td>
@@ -213,13 +225,17 @@ TEMPLATES = {
     <tr class="watson-stack-frames-frame-vars">
         <td colspan="4" class="hide">
             <table class="watson-stack-frames-vars">
-                <tr><th>Name</th><th>Value</th></tr>
+                <thead>
+                    <tr><th>Name</th><th>Value</th></tr>
+                </thead>
+                <tbody>
                 {% for k, v in frame.vars|dictsort %}
                 <tr>
                     <td>{{ k|e }}</td>
                     <td>{{ v|e }}</td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
         </td>
     </tr>
