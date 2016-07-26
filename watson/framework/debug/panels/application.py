@@ -85,7 +85,7 @@ class Panel(abc.Panel):
             usage=self.usage,
             config=pygments.highlight(
                 pretty(self.application.config),
-                lexers.PythonLexer(), formatters.HtmlFormatter()))
+                lexers.PythonLexer(), formatters.HtmlFormatter(cssclass='codehilite')))
 
     def render_key_stat(self):
         return '{0}mb'.format(self.usage)
