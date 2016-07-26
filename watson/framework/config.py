@@ -25,6 +25,9 @@ debug = {
         'watson.framework.debug.panels.Framework': {
             'enabled': True
         },
+        'watson.framework.debug.panels.Log': {
+            'enabled': True
+        }
     }
 }
 
