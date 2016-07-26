@@ -167,20 +167,26 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     });
     for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener('click', function() {
-            removeActiveClasses();
-            toolbar.classList.remove('collapsed');
-            this.classList.add('active');
-            var panel = this.getAttribute('data-panel');
-            toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]').classList.add('active');
-            panelOpen = true;
+            selectPanel(this);
         });
+    }
+    function selectPanel(button) {
+        removeActiveClasses();
+        toolbar.classList.remove('collapsed');
+        button.classList.add('active');
+        var panel = button.getAttribute('data-panel');
+        toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]').classList.add('active');
+        panelOpen = true;
     }
 
     resizeHandle.addEventListener('mousedown', function() {
         resizingToolbar = true;
     });
     document.addEventListener('mousemove', function(evt) {
-        if (resizingToolbar && !toolbar.classList.contains('collapsed')) {
+        if (resizingToolbar) {
+            if (toolbar.classList.contains('collapsed')) {
+                selectPanel(buttons[0]);
+            }
             var height = (window.innerHeight - evt.clientY);
             if (height > toolbarButtonContainer.offsetHeight) {
                 var newHeight = height + 'px';
