@@ -60,6 +60,9 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     top: 8px;
     padding: 5px 7px 4px;
 }
+.watson-debug-toolbar__container #DebugToolbarToggle.hide {
+    display: none;
+}
 .watson-debug-toolbar__container #DebugToolbarToggle:hover {
     background: #353535;
 }
@@ -182,7 +185,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     <div class="watson-debug-toolbar__resize"></div>
     <div class="watson-debug-toolbar__inner">
         <div class="watson-debug-toolbar__buttons">
-            <a href="javascript:;" id="DebugToolbarToggle">&times;</a>
+            <a href="javascript:;" id="DebugToolbarToggle" class="hide">&times;</a>
             {% for module, panel in panels|dictsort %}
             <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> {{ panel.title }} <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
             {% endfor %}
@@ -195,6 +198,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     </div>
 </div>
 <script type="text/javascript">
+(function(document) {
     var body = document.body,
         toolbar = document.querySelector('.watson-debug-toolbar__container'),
         toggle = document.getElementById('DebugToolbarToggle'),
@@ -202,7 +206,8 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         buttons = toolbar.querySelectorAll('.watson-debug-toolbar__buttons a:not([id])'),
         panels = toolbar.querySelectorAll('.watson-debug-toolbar__panel'),
         resizeHandle = toolbar.querySelector('.watson-debug-toolbar__resize'),
-        panelOpen = false, resizingToolbar = false;
+        resizingToolbar = false, watsonDebugToolbarHeightCookie = 'watson.debugtoolbar.height',
+        watsonDebugToolbarCurrentPanelCookie = 'watson.debugtoolbar.currentPanel';
     body.style.paddingBottom = parseFloat(body.style.paddingBottom) + parseFloat(toolbar.offsetHeight);
 
     function removeActiveClasses() {
@@ -215,29 +220,56 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         }
     }
     toggle.addEventListener('click', function() {
-        if (!panelOpen) {
-            toolbar.parentNode.removeChild(toolbar);
-            return;
-        }
-        if (toolbar.offsetHeight > 200) {
-            toolbar.removeAttribute('style');
-        }
+        toggle.classList.add('hide');
+        toolbar.removeAttribute('style');
         toolbar.classList.add('collapsed');
         removeActiveClasses();
-        panelOpen = false;
     });
     for (var i = 0; i < buttons.length; i++) {
+        buttons[i].tag = i;
         buttons[i].addEventListener('click', function() {
-            selectPanel(this);
+            selectPanel(this.tag);
         });
     }
-    function selectPanel(button) {
+    var toolbarHeight = readCookie(watsonDebugToolbarHeightCookie),
+        selectedIndex = readCookie(watsonDebugToolbarCurrentPanelCookie);
+    if (toolbarHeight) {
+        if (!selectedIndex) {
+            selectedIndex = 0;
+        }
+        selectPanel(selectedIndex);
+        setPanelHeight(toolbarHeight);
+    }
+    function resetPanel() {
+        toolbar.removeAttribute('style');
+        toolbar.classList.add('collapsed');
+        toggle.classList.add('hide');
+        panels.forEach(function(n, i) {
+            n.removeAttribute('style');
+        });
+        removeActiveClasses();
+        eraseCookie(watsonDebugToolbarHeightCookie);
+        eraseCookie(watsonDebugToolbarCurrentPanelCookie);
+    }
+    function selectPanel(index) {
+        var button = buttons[index];
         removeActiveClasses();
         toolbar.classList.remove('collapsed');
         button.classList.add('active');
         var panel = button.getAttribute('data-panel');
         toolbar.querySelector('.watson-debug-toolbar__panel[data-panel="'+panel+'"]').classList.add('active');
-        panelOpen = true;
+        toggle.classList.remove('hide');
+        createCookie(watsonDebugToolbarCurrentPanelCookie, index);
+        if (!readCookie(watsonDebugToolbarHeightCookie)) {
+            createCookie(watsonDebugToolbarHeightCookie, 200);
+        }
+    }
+
+    function setPanelHeight(height) {
+        toolbar.style.height = height + 'px';
+        panels.forEach(function(n, i) {
+            n.style.height = height - 40 + 'px';
+        });
     }
 
     resizeHandle.addEventListener('mousedown', function() {
@@ -246,15 +278,14 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     document.addEventListener('mousemove', function(evt) {
         if (resizingToolbar) {
             if (toolbar.classList.contains('collapsed')) {
-                selectPanel(buttons[0]);
+                selectPanel(0);
             }
             var height = (window.innerHeight - evt.clientY);
             if (height > toolbarButtonContainer.offsetHeight) {
-                var newHeight = height + 'px';
-                toolbar.style.height = newHeight;
-                panels.forEach(function(n, i) {
-                    n.style.height = height - 40 + 'px';
-                });
+                createCookie(watsonDebugToolbarHeightCookie, height);
+                setPanelHeight(height);
+            } else {
+                resetPanel();
             }
         }
         evt.stopPropagation();
@@ -262,7 +293,33 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     });
     document.addEventListener('mouseup', function() {
         resizingToolbar = false;
-    })
+    });
+
+    function createCookie(name,value,days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var expires = "; expires="+date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name+"="+value+expires+"; path=/";
+    }
+
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        createCookie(name,"",-1);
+    }
+})(document);
 </script>
 """
 
