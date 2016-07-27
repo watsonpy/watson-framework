@@ -8,6 +8,9 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
 <style type="text/css">
 {{ pygment_styles }}
+.watson-debug-toolbar__container table {
+    margin: 0;
+}
 .watson-debug-toolbar__container {
     position: fixed;
     bottom: 0;
@@ -31,10 +34,18 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     display: inline-block;
     border-bottom: 2px solid transparent;
 }
-.watson-debug-toolbar__buttons a span {
+.watson-debug-toolbar__buttons a .watson-debug-toolbar__key-stat {
     color: #aeabab;
     font-weight: bold;
     padding-left: 8px;
+}
+@media only screen and (max-width:1024px) {
+    .watson-debug-toolbar__buttons a .watson-debug-toolbar__button-title {
+        display: none;
+    }
+    .watson-debug-toolbar__buttons a .watson-debug-toolbar__key-stat {
+        font-weight: normal;
+    }
 }
 .watson-debug-toolbar__buttons a i {
     color: #aeabab;
@@ -187,7 +198,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
         <div class="watson-debug-toolbar__buttons">
             <a href="javascript:;" id="DebugToolbarToggle" class="hide">&times;</a>
             {% for module, panel in panels|dictsort %}
-            <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> {{ panel.title }} <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
+            <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> <span class="watson-debug-toolbar__button-title">{{ panel.title }}</span> <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
             {% endfor %}
         </div>
         {% for module, panel in panels|dictsort %}
