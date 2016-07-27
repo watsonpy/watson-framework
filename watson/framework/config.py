@@ -81,8 +81,14 @@ dependencies = {
         'app_render_listener': {
             'item': 'watson.framework.listeners.Render',
             'init':
-            [lambda container: container.get(
-             'application.config')['views']]
+            [lambda container: container.get('application.config')['views']]
+        },
+        'translator': {
+            'item': 'watson.framework.i18n.translate.Translator',
+            'init': [
+                lambda container: container.get('application.config')['i18n']['default_locale'],
+                lambda container: container.get('application.config')['i18n']['package']
+            ]
         }
     }
 }
@@ -149,8 +155,15 @@ session = {
     }
 }
 
+# Exceptions
 exceptions = {
     'class': 'watson.framework.exceptions.ApplicationError'
+}
+
+# Localization
+i18n = {
+    'default_locale': 'en',
+    'package': 'watson.framework.i18n.locales'
 }
 
 # Application event settings

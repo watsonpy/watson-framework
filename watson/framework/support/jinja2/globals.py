@@ -89,3 +89,20 @@ def flash_messages(context):
         else:
             app_context['flash_messages'] = {}
     return context['context']['flash_messages']
+
+
+class Translate(ContainerAware):
+    __ioc_definition__ = {
+        'init': {
+            'translator': 'translator'
+        }
+    }
+
+    def __init__(self, translator):
+        self.translator = translator
+
+    def __call__(self, string, **kwargs):
+        return self.translator.translate(string, **kwargs)
+
+
+_ = Translate  # alias to Translate

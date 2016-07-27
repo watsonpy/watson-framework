@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from watson.framework import applications
 from watson.framework.support.jinja2.globals import (url, config, request,
-                                                     flash_messages)
+                                                     flash_messages, _)
 
 
 class TestGlobals(object):
@@ -29,3 +29,12 @@ class TestGlobals(object):
     def test_flash_messages(self):
         assert not flash_messages({'context': {}})
         assert flash_messages({'context': {'flash_messages': ['test']}}) == ['test']
+
+    def test_translate(self):
+        app = applications.Http({
+            'i18n': {
+                'package': 'tests.watson.framework.i18n.locales'
+            }
+        })
+        translate = _(app.container.get('translator'))
+        assert translate('test.string') == 'This is a sample string'
