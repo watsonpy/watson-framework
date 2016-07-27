@@ -4,6 +4,7 @@
 *.sublime-workspace
 tests/_coverage
 docs/_build
+.cache/v/
 
 ### Python ###
 *.py[cod]
