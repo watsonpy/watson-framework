@@ -6,6 +6,7 @@ from watson.framework import events
 
 TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel="stylesheet" type="text/css">
 <style type="text/css">
 {{ pygment_styles }}
 .watson-debug-toolbar__container table {
@@ -39,12 +40,15 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     font-weight: bold;
     padding-left: 8px;
 }
+.watson-debug-toolbar__buttons a .watson-debug-toolbar__button-title {
+    font-weight: lighter;
+}
 @media only screen and (max-width:1024px) {
     .watson-debug-toolbar__buttons a .watson-debug-toolbar__button-title {
         display: none;
     }
     .watson-debug-toolbar__buttons a .watson-debug-toolbar__key-stat {
-        font-weight: normal;
+        font-weight: lighter;
     }
 }
 .watson-debug-toolbar__buttons a i {
@@ -106,6 +110,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     background: #fff;
     padding: 4px 8px;
     border-right: 1px solid #f3f3f3;
+    font-weight: lighter;
 }
 .watson-debug-toolbar__panel table tr:nth-of-type(2n) td {
     background: #e3e6e9;
@@ -124,6 +129,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
     margin-bottom: 4px;
     margin-left: 180px;
     padding: 10px;
+    font-weight: lighter;
 }
 .watson-debug-toolbar__resize {
     cursor: row-resize;
