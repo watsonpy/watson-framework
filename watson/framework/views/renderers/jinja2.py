@@ -13,7 +13,7 @@ TEMPLATES = {
             <head>
                 {% block head %}
                 <meta charset="utf-8" />
-                <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+                <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
                 <style type="text/css">
                     html, body { font-family: 'Open Sans', Helvetica, Arial, sans-serif }
                     {% block styles %}{% endblock %}
