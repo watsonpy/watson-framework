@@ -5,19 +5,6 @@ import resource
 from watson.framework.debug import abc
 from watson.framework import events
 
-TEMPLATE = """
-<dt>Controller:</dt>
-<dd>{{ controller or "None" }}</dd>
-<dt>Route:</dt>
-<dd>{{ route_name }}</dd>
-<dt>Template:</dt>
-<dd>{{ template }}</dd>
-<dt>Memory Usage:</dt>
-<dd>{{ usage }}mb</dd>
-<dt>Configuration</dt>
-<dd>{{ config }}</dd>
-"""
-
 
 def pretty(value, htchar='    ', lfchar='\n', indent=0):
     """Print out a dictionary as a string.
@@ -78,14 +65,16 @@ class Panel(abc.Panel):
         self.view_model = event.params['view_model']
 
     def render(self):
-        return self.renderer.env.from_string(TEMPLATE).render(
-            route_name=self.route_name,
-            controller=self.controller,
-            template=self.template,
-            usage=self.usage,
-            config=pygments.highlight(
+        return self._render({
+            'route_name': self.route_name,
+            'controller': self.controller,
+            'template': self.template,
+            'usage': self.usage,
+            'config': pygments.highlight(
                 pretty(self.application.config),
-                lexers.PythonLexer(), formatters.HtmlFormatter(cssclass='codehilite')))
+                lexers.PythonLexer(),
+                formatters.HtmlFormatter(cssclass='codehilite'))
+        })
 
     def render_key_stat(self):
         return '{0}mb'.format(self.usage)

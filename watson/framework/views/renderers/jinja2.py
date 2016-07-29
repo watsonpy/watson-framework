@@ -52,8 +52,14 @@ class Renderer(abc.Renderer):
         kwargs['loader'] = jinja2.ChoiceLoader(loaders)
         self._env = jinja2.Environment(**kwargs)
 
-    def __call__(self, view_model, context=None):
+    def render(self, template, data, context=None):
         template = self._env.get_template(
-            '{0}.{1}'.format(template_to_posix_path(view_model.template),
+            '{0}.{1}'.format(template_to_posix_path(template),
                              self.config['extension']))
-        return template.render(context=context or {}, **view_model.data)
+        return template.render(context=context or {}, **data)
+
+    def __call__(self, view_model, context=None):
+        return self.render(
+            view_model.template,
+            data=view_model.data,
+            context=context)

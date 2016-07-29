@@ -1,0 +1,30 @@
+<style>
+.watson-debug-toolbar__panel__profile {
+    width: 100%;
+}
+</style>
+<table class="watson-debug-toolbar__panel__profile">
+    <thead>
+        <tr>
+            <th>Times</th><th>Total Time</th><th>Per call</th><th>Cumulative Time</th><th>Per call</th><th>Function</th><th>Line</th><th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for time in times %}
+        <tr>
+            <td>{{ time['number_calls'] }}</td>
+            <td>{{ time['total_time'] }}</td>
+            <td>{{ time['per_call'] }}</td>
+            <td>{{ time['cumulative_time'] }}</td>
+            <td>{{ time['per_call2'] }}</td>
+            <td>{{ time['file']|e }}</td>
+            <td>{{ time['line'] }}</td>
+            <td>{{ time['function_name']|e }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8">Nothing to profile, refresh the page.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

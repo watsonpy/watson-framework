@@ -1,38 +1,6 @@
 # -*- coding: utf-8 -*-
 from watson.framework.debug import abc, profile
 
-TEMPLATE = """<style>
-.watson-debug-toolbar__panel__profile {
-    width: 100%;
-}
-</style>
-<table class="watson-debug-toolbar__panel__profile">
-    <thead>
-        <tr>
-            <th>Times</th><th>Total Time</th><th>Per call</th><th>Cumulative Time</th><th>Per call</th><th>Function</th><th>Line</th><th>File</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for time in times %}
-        <tr>
-            <td>{{ time['number_calls'] }}</td>
-            <td>{{ time['total_time'] }}</td>
-            <td>{{ time['per_call'] }}</td>
-            <td>{{ time['cumulative_time'] }}</td>
-            <td>{{ time['per_call2'] }}</td>
-            <td>{{ time['file']|e }}</td>
-            <td>{{ time['line'] }}</td>
-            <td>{{ time['function_name']|e }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="8">Nothing to profile, refresh the page.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-"""
-
 
 class Panel(abc.Panel):
     title = 'Profile'
@@ -45,11 +13,12 @@ class Panel(abc.Panel):
             application.run = self.run
 
     def render(self):
-        return self.renderer.env.from_string(TEMPLATE).render(
-            times=self.data.get('times', []),
-            total_time=self.data.get('total_time', 0),
-            function_calls=self.data.get('function_calls', 0),
-            primative_calls=self.data.get('primative_calls', 0))
+        return self._render({
+            'times': self.data.get('times', []),
+            'total_time': self.data.get('total_time', 0),
+            'function_calls': self.data.get('function_calls', 0),
+            'primative_calls': self.data.get('primative_calls', 0)
+        })
 
     def render_key_stat(self):
         return '{0}s'.format(self.data.get('total_time', 0))

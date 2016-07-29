@@ -1,0 +1,43 @@
+<dt>Request:</dt>
+<dd>{{ request.url }}</dd>
+<dt>Method:</dt>
+<dd>{{ request.method }}</dd>
+<dt>Session Id:</dt>
+<dd>{{ request.session.id }}</dd>
+<dt>Headers:</dt>
+<dd>
+    <table>
+        <thead><tr><th>Key</th><th>Value</th></tr></thead>
+    {% for key, value in request.headers|dictsort %}
+        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+    {% endfor %}
+    </table>
+</dd>
+<dt>Get Vars:</dt>
+<dd>
+    <table>
+    {% for key, value in request.get|dictsort %}
+        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+    {% else %}
+        -
+    {% endfor %}
+    </table>
+</dd>
+<dt>Post Vars:</dt>
+<dd>
+    <table>
+    {% for key, value in request.post|dictsort %}
+        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+    {% else %}
+        -
+    {% endfor %}
+    </table>
+</dd>
+<dt>Server:</dt>
+<dd>
+    <table>
+    {% for key, value in request.server|dictsort %}
+        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+    {% endfor %}
+    </table>
+</dd>

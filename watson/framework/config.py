@@ -25,7 +25,7 @@ debug = {
         'watson.framework.debug.panels.Framework': {
             'enabled': True
         },
-        'watson.framework.debug.panels.Log': {
+        'watson.framework.debug.panels.Logging': {
             'enabled': True
         }
     }
@@ -103,7 +103,10 @@ views = {
             'config': {
                 'extension': 'html',
                 'paths': [os.path.join(os.getcwd(), 'views')],
-                'packages': [('watson.framework.views.templates', 'html')],
+                'packages': [
+                    ('watson.framework.views.templates', 'html'),
+                    ('watson.framework.debug', 'views'),
+                ],
                 'filters': ['watson.framework.support.jinja2.filters'],
                 'globals': ['watson.framework.support.jinja2.globals'],
             }
