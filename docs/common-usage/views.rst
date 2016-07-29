@@ -76,7 +76,8 @@ This above convention is defined within watson.framework.config.views, however t
                 'name': 'jinja2_renderer',
                 'config': {
                     'extension': 'html',
-                    'paths': [os.path.join(os.getcwd(), 'views')]
+                    'paths': [os.path.join(os.getcwd(), 'views')],
+                    'packages': [('my.application', 'views')]
                 }
             },
             'xml': {'name': 'xml_renderer'},

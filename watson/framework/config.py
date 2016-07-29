@@ -103,6 +103,7 @@ views = {
             'config': {
                 'extension': 'html',
                 'paths': [os.path.join(os.getcwd(), 'views')],
+                'packages': [('watson.framework.views.templates', 'html')],
                 'filters': ['watson.framework.support.jinja2.filters'],
                 'globals': ['watson.framework.support.jinja2.globals'],
             }

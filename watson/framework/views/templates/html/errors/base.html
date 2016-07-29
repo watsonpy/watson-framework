@@ -1,0 +1,128 @@
+{% extends "watson/base.html" %}
+{% block styles %}
+    {{ super() }}
+    body {
+        -webkit-font-smoothing: antialiased;
+        margin: 0; padding: 0;
+        font-size: 12px;
+    }
+    h1, h2 {
+        background: #232e34;
+        color: #fff;
+        margin: 0;
+        padding: 10px;
+        font-weight: normal;
+    }
+    h1:first-of-type {
+        padding-bottom: 0;
+    }
+    h2 {
+        color: #3e515a;
+        font-size: 1.1em;
+        padding-top: 0;
+    }
+    h3 {
+        color: #333;
+        margin-left: 10px;
+    }
+    p {
+        margin: 0;
+        padding: 10px;
+    }
+    table {
+        margin: 10px;
+        width: 98%;
+        border-collapse: collapse;
+    }
+    table th {
+        text-align: left;
+        font-size: 1.1em;
+        padding: 0 6px 6px;
+    }
+    table td {
+        padding: 6px;
+        vertical-align: top;
+        color: #333;
+    }
+    .watson-stack-frames > tbody > tr {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    .watson-stack-frames > tbody > tr.watson-stack-frames-frame-vars {
+        cursor: default;
+        background: #f1ecc2;
+    }
+    .watson-stack-frames > tbody > tr:nth-of-type(4n+1) {
+        background-color: #fff;
+    }
+    .watson-stack-frames-vars thead tr th:nth-of-type(1) {
+        width: 20%;
+    }
+    .hide {
+        display: none;
+    }
+    table td {
+        font-family: "Lucida Console", Monaco, monospace;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+        word-break: break-word;
+    }
+    dl {
+        margin: 0;
+        padding: 10px;
+    }
+    dl.watson-info {
+        background: #d9f2fe;
+        color: #1c4d72;
+        border-bottom: 1px solid #9cb3be;
+    }
+    dl.watson-error {
+        box-shadow: -6px 0 6px rgba(0, 0, 0, 0.05);
+        border-top: 1px solid #00d9ee;
+        border-bottom: 1px solid #00b7df;
+        background: #00bfe3;
+        color: #fff;
+        text-shadow: 0 1px #009fcc;
+        padding-top: 12px;
+    }
+    dt {
+        font-weight: bold;
+        font-size: 1.1em;
+        float: left;
+        width: 160px;
+        clear: both;
+    }
+    dd {
+        color: #6087af;
+        margin-bottom: 4px;
+        margin-left: 160px;
+    }
+    dd table {
+        margin: 0;
+        table-layout: fixed;
+    }
+    dd table td {
+        font-family: inherit;
+        padding: 2px 0;
+        color: inherit;
+        word-wrap: break-word;
+    }
+    dd table tr > td:first-of-type {
+        width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    dl.watson-error dd {
+        color: #f6f6f6;
+        padding-top: 2px;
+    }
+{% endblock %}
+{% block body %}
+    <h1>{% block error_title %}{% endblock %}</h1>
+    {% include "_includes/exception_details.html" %}
+    {% if not debug %}
+    <p>{% block error_message %}{% endblock %}</p>
+    {% endif %}
+{% endblock %}

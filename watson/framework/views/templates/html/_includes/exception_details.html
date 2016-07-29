@@ -1,0 +1,110 @@
+{% if debug %}
+<h2>{{ message|escape }}</h2>
+<dl class="watson-error">
+    <dt>Exception Type:</dt>
+    <dd>{{ type }}</dd>
+    {% if cause_message %}
+    <dt>Exception Message:</dt>
+    <dd>{{ cause_message|escape }}</dd>
+    {% endif %}
+</dl>
+<dl class="watson-info">
+    {% if route_match %}
+    <dt>Watson Version:<dt>
+    <dd>{{ version }}</dd>
+    <dt>Route:</dt>
+    <dd>{{ route_match.name|e }}</dd>
+    {% endif %}
+    <dt>Request:</dt>
+    <dd>{{ request().url }}</dd>
+    <dt>Route:</dt>
+    <dd>{% if context['route_match'] %}{{ context['route_match'].route.name }}{% endif %}</dd>
+    <dt>Method:</dt>
+    <dd>{{ request().method }}</dd>
+    <dt>Session Id:</dt>
+    <dd>{{ request().session.id }}</dd>
+    <dt>Headers:</dt>
+    <dd>
+        <table>
+        {% for key, value in request().headers|dictsort %}
+            <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+        {% endfor %}
+        </table>
+    </dd>
+    <dt>Get Vars:</dt>
+    <dd>
+        <table>
+        {% for key, value in request().get|dictsort %}
+            <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+        {% else %}
+            -
+        {% endfor %}
+        </table>
+    </dd>
+    <dt>Post Vars:</dt>
+    <dd>
+        <table>
+        {% for key, value in request().post|dictsort %}
+            <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+        {% else %}
+            -
+        {% endfor %}
+        </table>
+    </dd>
+    <dt>Server:</dt>
+    <dd>
+        <table>
+        {% for key, value in request().server|dictsort %}
+            <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+        {% endfor %}
+        </table>
+    </dd>
+</dl>
+<h1>Stack Trace</h1>
+<table class="watson-stack-frames">
+<thead>
+<tr>
+    <th>Line</th><th>File</th><th>Function</th><th>Code</th>
+</tr>
+</thead>
+{% for frame in frames %}
+<tr class="watson-stack-frames-frame">
+    <td>{{ frame.line }}</td>
+    <td>{{ frame.file }}</td>
+    <td>{{ frame.function }}</td>
+    <td>{{ frame.code }}</td>
+</tr>
+{% if frame.vars %}
+<tr class="watson-stack-frames-frame-vars">
+    <td colspan="4" class="hide">
+        <table class="watson-stack-frames-vars">
+            <thead>
+                <tr><th>Name</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+            {% for k, v in frame.vars|dictsort %}
+            <tr>
+                <td>{{ k|e }}</td>
+                <td>{{ v|e }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
+{% endfor %}
+</table>
+<script>
+Element.prototype.toggleClass = function (className) {
+    this.className = this.className === className ? '' : className;
+};
+var frames = document.getElementsByClassName('watson-stack-frames-frame');
+for (var i = 0; i < frames.length; i++) {
+    var frame = frames[i];
+    frame.onclick = function() {
+        this.nextElementSibling.children[0].toggleClass('hide');
+    }
+}
+</script>
+{% endif %}

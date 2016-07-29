@@ -220,6 +220,11 @@ class Http(Base):
         view_model = result.first()
         response = Response(kwargs['exception'].status_code)
         context = kwargs['context']
+        accept = context['request'].headers.get('accept')
+        if accept:
+            accept_parts = accept.split('/')
+            if len(accept_parts) > 1:
+                view_model.format = accept_parts[1]
         context['response'] = response
         if last_exception:
             self.render(with_dispatcher=False,

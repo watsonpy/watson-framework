@@ -162,8 +162,9 @@ class Render(Base):
         context = event.params['context']
         response, view_model = context['response'], event.params['view_model']
         renderers = self.view_config['renderers']
+        default_renderer = renderers[self.view_config['default_renderer']]
         renderer = renderers.get(
-            view_model.format, renderers[self.view_config['default_renderer']])
+            view_model.format, default_renderer)
         try:
             mime_type = MIME_TYPES[view_model.format][0]
         except:
@@ -171,13 +172,19 @@ class Render(Base):
                 mime_type = view_model.format
             else:
                 mime_type = 'text/{0}'.format(view_model.format)
-        renderer_instance = event.params['container'].get(renderer['name'])
+        container = event.params['container']
+        renderer_instance = container.get(renderer['name'])
         try:
             response.body = renderer_instance(view_model, context=context)
-            if 'Content-Type' not in response.headers:
-                response.headers.add('Content-Type', mime_type)
-            return response
         except Exception as exc:
-            raise InternalServerError(
-                'Template ({0}) not found'.format(
-                    view_model.template)) from exc
+            try:
+                renderer_instance = container.get(default_renderer['name'])
+                view_model.format = self.view_config['default_format']
+                response.body = renderer_instance(view_model, context=context)
+            except Exception as exc_:
+                raise InternalServerError(
+                    'Template ({0}) not found'.format(
+                        view_model.template)) from exc_
+        if 'Content-Type' not in response.headers:
+            response.headers.add('Content-Type', mime_type)
+        return response
