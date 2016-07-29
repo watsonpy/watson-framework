@@ -32,7 +32,7 @@ TEMPLATE = """<style>
     <tbody>
         {% for log in logs %}
         <tr>
-            <td>{{ log.time }}</td>
+            <td>{{ log.time|date(format='%Y-%m-%d %H:%M:%S') }}</td>
             <td>{{ log.name }}</td>
             <td>{{ log.levelname|title }}</td>
             <td>{{ log.getMessage() }}</td>

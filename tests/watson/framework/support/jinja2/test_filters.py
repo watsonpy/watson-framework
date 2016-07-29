@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from watson.framework.support.jinja2 import filters
 from watson.form import fields
 
@@ -16,3 +17,7 @@ class TestFilters(object):
         qs = filters.merge_query_string({'page': 1, 'extra': 'something'}, {'page': 2})
         assert 'extra=something' in qs
         assert 'page=2' in qs
+
+    def test_date(self):
+        date = datetime.strptime('2016/07/01', '%Y/%m/%d')
+        assert filters.date(date, '%Y-%m-%d') == '2016-07-01'

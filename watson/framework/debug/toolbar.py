@@ -92,6 +92,7 @@ TEMPLATE = """<!-- Injected Watson Debug Toolbar -->
 }
 .watson-debug-toolbar__container .watson-debug-toolbar__panel.active {
     display: block;
+    padding: 10px;
 }
 .watson-debug-toolbar__panel table {
     width: 100%;

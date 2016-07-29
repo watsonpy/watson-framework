@@ -33,3 +33,15 @@ def merge_query_string(obj, values):
     qs_parts = dict(obj)
     qs_parts.update(values)
     return '?{0}'.format(parse.urlencode(qs_parts))
+
+
+def date(obj, format=None):
+    """Converts a datetime object to a string.
+
+    See https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+    for formatting options.
+
+    Args:
+        format: The output format of the date.
+    """
+    return obj.strftime(format)
