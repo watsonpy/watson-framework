@@ -16,10 +16,20 @@ def template_to_posix_path(template, sep=None):
 class Renderer(abc.Renderer):
     _env = None
     _debug_mode = False
+    _choice_loader = None
 
     @property
     def env(self):
         return self._env
+
+    @property
+    def loader(self):
+        if not self._choice_loader:
+            self._choice_loader = jinja2.ChoiceLoader()
+        return self._choice_loader
+
+    def add_package_loader(self, package, path):
+        self.loader.loaders.append(jinja2.PackageLoader(package, path))
 
     def __init__(self, config=None, application=None):
         super(Renderer, self).__init__(config)
@@ -40,16 +50,21 @@ class Renderer(abc.Renderer):
                         env_type[name] = application.container.get(obj)
 
     def register_loaders(self):
-        user_loaders = [jinja2.FileSystemLoader(path)
-                        for path in self.config.get('paths')]
+        user_path_loaders = [jinja2.FileSystemLoader(path)
+                             for path in self.config.get('paths')]
+        user_package_loaders = [jinja2.PackageLoader(*package)
+                                for package in self.config.get('packages')]
+        user_loaders = user_package_loaders + user_path_loaders
         system_loaders = [jinja2.PackageLoader(*package)
-                          for package in self.config.get('packages')]
+                          for package in self.config.get('framework_packages')]
         if self._debug_mode:
             loaders = system_loaders + user_loaders
         else:
             loaders = user_loaders + system_loaders
         kwargs = self.config.get('environment', {})
-        kwargs['loader'] = jinja2.ChoiceLoader(loaders)
+        loader = jinja2.ChoiceLoader(loaders)
+        kwargs['loader'] = loader
+        self._choice_loader = loader
         self._env = jinja2.Environment(**kwargs)
 
     def render(self, template, data, context=None):

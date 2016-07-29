@@ -103,7 +103,8 @@ views = {
             'config': {
                 'extension': 'html',
                 'paths': [os.path.join(os.getcwd(), 'views')],
-                'packages': [
+                'packages': [],
+                'framework_packages': [
                     ('watson.framework.views.templates', 'html'),
                     ('watson.framework.debug', 'views'),
                 ],
