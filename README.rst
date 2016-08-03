@@ -14,7 +14,7 @@ Docs <http://watson-framework.readthedocs.org/>`__.
 Build Status
 ^^^^^^^^^^^^
 
-|Build Status| |Coverage Status| |Version| |Downloads| |Licence|
+|Build Status| |Coverage Status| |Version|
 
 Installation
 ------------
@@ -46,9 +46,9 @@ Using falcon-bench, Watson received the following requests per second (Django an
 2. django..........7,696 req/sec or 129.94 ms/req (2x)
 3. flask...........4,281 req/sec or 233.58 ms/req (1x)
 
-.. |Build Status| image:: https://api.travis-ci.org/watsonpy/watson-framework.png?branch=master
+.. |Build Status| image:: https://img.shields.io/travis/watsonpy/watson-framework.svg?maxAge=2592000
    :target: https://travis-ci.org/watsonpy/watson-framework
-.. |Coverage Status| image:: https://coveralls.io/repos/watsonpy/watson-framework/badge.png
+.. |Coverage Status| image:: https://img.shields.io/coveralls/watsonpy/watson-framework.svg?maxAge=2592000
    :target: https://coveralls.io/r/watsonpy/watson-framework
 .. |Version| image:: https://img.shields.io/pypi/v/watson-framework.svg?maxAge=2592000
    :target: https://pypi.python.org/pypi/watson-framework/
