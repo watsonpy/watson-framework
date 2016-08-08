@@ -3,5 +3,5 @@ include AUTHORS
 include LICENSE
 include requirements.txt
 include requirements-test.txt
-include watson/framework/debug/views/*
-include watson/framework/views/templates/html/*
+recursive-include watson/framework/debug/views *
+recursive-include watson/framework/views/templates/html *
