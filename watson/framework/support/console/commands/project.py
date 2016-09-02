@@ -203,6 +203,15 @@ class Project(command.Base, ContainerAware):
             raise e
             _no_application_error()
 
+    @arg('fix', optional=True)
+    def validate(self, fix):
+        """Validate project configuration and dependencies.
+
+        Args:
+            fix: Attempt to resolve invalid settings.
+        """
+        pprint(self.application_config)
+
 
 def _no_application_error():
     raise ConsoleError(
@@ -313,6 +322,6 @@ except:
 
 if __name__ == '__main__':
     config = imports.import_module(os.environ['APP_SETTINGS'])
-    application = applications.Console()
+    application = applications.Console(config)
     application()
 """

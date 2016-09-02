@@ -7,6 +7,8 @@
     <dt>Exception Message:</dt>
     <dd>{{ cause_message|escape }}</dd>
     {% endif %}
+    <dt>File:</dt>
+    <dd>{{ frames[0]['file'] }}:{{ frames[0]['line'] }}</dd>
 </dl>
 <dl class="watson-info">
     {% if route_match %}

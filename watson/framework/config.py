@@ -86,8 +86,24 @@ dependencies = {
         'translator': {
             'item': 'watson.framework.i18n.translate.Translator',
             'init': [
-                lambda container: container.get('application.config')['i18n']['default_locale'],
-                lambda container: container.get('application.config')['i18n']['package']
+                lambda container: container.get(
+                    'application.config')['i18n']['default_locale'],
+                lambda container: container.get(
+                    'application.config')['i18n']['package']
+            ]
+        },
+        'mailer_backend': {
+            'item': lambda container: container.get(container.get(
+                'application.config')['mail']['backend']['class']),
+            'init': lambda container: container.get('application.config')['mail']['backend']['options']
+        },
+        'mailer': {
+            'item': 'watson.framework.mail.Mailer',
+            'init': [
+                lambda container: container.get('mailer_backend'),
+                lambda container: container.get(
+                    container.get('application.config')['views']['renderers'][container.get(
+                        'application.config')['views']['default_renderer']]['name'])
             ]
         }
     }
@@ -169,6 +185,14 @@ exceptions = {
 i18n = {
     'default_locale': 'en',
     'package': 'watson.framework.i18n.locales'
+}
+
+# Mail
+mail = {
+    'backend': {
+        'class': 'watson.mail.backends.Sendmail',
+        'options': {}
+    },
 }
 
 # Application event settings
