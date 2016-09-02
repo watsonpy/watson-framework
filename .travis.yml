@@ -4,8 +4,8 @@ python:
   - 3.4
   - 3.5
 install:
-  - pip install -r requirements-test.txt --use-mirrors
-  - pip install -r requirements.txt --use-mirrors
+  - pip install -r requirements-test.txt
+  - pip install -r requirements.txt
 before_script:
   - mkdir -p tests/_coverage
 script:
