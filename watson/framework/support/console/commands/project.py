@@ -30,8 +30,9 @@ class Project(command.Base, ContainerAware):
     }
 
     @arg('override', action='store_const', const=1, optional=True)
+    @arg('component_based', action='store_const', const=1, optional=True)
     @arg('dir', optional=True)
-    def new(self, name, app_name, dir, override):
+    def new(self, name, app_name, dir, override, component_based):
         """Creates a new project, defaults to the current working directory.
 
         Args:
@@ -39,6 +40,7 @@ class Project(command.Base, ContainerAware):
             app_name: The name of the application to create
             dir: The directory to create the project in
             override: Override any existing project in the path
+            component_based: Create component based structure
         """
         if dir:
             root = os.path.abspath(dir)
@@ -50,10 +52,6 @@ class Project(command.Base, ContainerAware):
         paths = [
             basepath,
             os.path.join(basepath, app_name),
-            os.path.join(basepath, app_name, 'config'),
-            os.path.join(basepath, app_name, 'controllers'),
-            os.path.join(basepath, app_name, 'views'),
-            os.path.join(basepath, app_name, 'views', 'index'),
             os.path.join(basepath, 'data'),
             os.path.join(basepath, 'data', 'cache'),
             os.path.join(basepath, 'data', 'logs'),
@@ -62,36 +60,85 @@ class Project(command.Base, ContainerAware):
             os.path.join(basepath, 'public', 'css'),
             os.path.join(basepath, 'public', 'img'),
             os.path.join(basepath, 'public', 'js'),
+            os.path.join(basepath, 'static'),
+            os.path.join(basepath, 'static', 'js'),
+            os.path.join(basepath, 'static', 'scss'),
             os.path.join(basepath, 'tests'),
-            os.path.join(basepath, 'tests', app_name),
-            os.path.join(basepath, 'tests', app_name, 'controllers'),
         ]
         files = [
+            (os.path.join(basepath, 'console.py'), CONSOLE_TEMPLATE),
+            (os.path.join(basepath, '.editorconfig'), EDITOR_CONFIG_TEMPLATE),
+            (os.path.join(basepath, '.gitignore'), GITIGNORE_TEMPLATE),
+            (os.path.join(basepath, 'requirements.txt'), REQUIREMENTS_TEMPLATE),
+            (os.path.join(basepath, 'README.md'), ''),
+            (os.path.join(basepath, 'public', 'robots.txt'), ROBOTS_TEMPLATE),
             (os.path.join(basepath, app_name, '__init__.py'), BLANK_PY_TEMPLATE),
             (os.path.join(basepath, app_name, 'app.py'), APP_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'config', '__init__.py'), BLANK_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'config', 'prod.py.dist'),
-             PROD_CONFIG_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'config', 'dev.py.dist'),
-             DEV_CONFIG_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'config', 'config.py'),
-             DEV_CONFIG_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'config', 'routes.py'),
-             ROUTES_PY_TEMPLATE),
-            (os.path.join(basepath, app_name, 'controllers', '__init__.py'),
-             SAMPLE_CONTROLLER_INIT_TEMPLATE),
-            (os.path.join(basepath, app_name, 'controllers', 'index.py'),
-             SAMPLE_CONTROLLER_TEMPLATE),
-            (os.path.join(basepath, app_name, 'views', 'index', 'get.html'),
-             SAMPLE_VIEW_TEMPLATE),
             (os.path.join(basepath, 'tests', '__init__.py'), BLANK_PY_TEMPLATE),
             (os.path.join(basepath, 'tests', app_name, '__init__.py'), BLANK_PY_TEMPLATE),
-            (os.path.join(basepath, 'tests', app_name,
-             'controllers', '__init__.py'), BLANK_PY_TEMPLATE),
-            (os.path.join(basepath, 'tests', app_name,
-             'controllers', 'test_index.py'), SAMPLE_TEST_SUITE),
-            (os.path.join(basepath, 'console.py'), CONSOLE_TEMPLATE),
         ]
+
+        if not component_based:
+            paths.extend([
+                os.path.join(basepath, app_name, 'config'),
+                os.path.join(basepath, app_name, 'controllers'),
+                os.path.join(basepath, app_name, 'views'),
+                os.path.join(basepath, app_name, 'views', 'index'),
+                os.path.join(basepath, 'tests', app_name),
+                os.path.join(basepath, 'tests', app_name, 'controllers'),
+            ])
+            files.extend([
+                (os.path.join(basepath, app_name, 'config', 'base.py'),
+                 SIMPLE_CONFIG_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'config', 'routes.py'),
+                 SIMPLE_ROUTES_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'config', 'dependencies.py'),
+                 DEPENDENCIES_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'controllers', '__init__.py'),
+                 SIMPLE_SAMPLE_CONTROLLER_INIT_TEMPLATE),
+                (os.path.join(basepath, app_name, 'controllers', 'index.py'),
+                 SAMPLE_CONTROLLER_TEMPLATE),
+                (os.path.join(basepath, app_name, 'views', 'index', 'get.html'),
+                 SAMPLE_VIEW_TEMPLATE),
+                (os.path.join(basepath, 'tests', app_name,
+                 'controllers', '__init__.py'), BLANK_PY_TEMPLATE),
+                (os.path.join(basepath, 'tests', app_name,
+                 'controllers', 'test_index.py'), SIMPLE_SAMPLE_TEST_SUITE),
+            ])
+        else:
+            paths.extend([
+                os.path.join(basepath, app_name, 'common'),
+                os.path.join(basepath, app_name, 'config'),
+                os.path.join(basepath, app_name, 'common', 'controllers'),
+                os.path.join(basepath, app_name, 'common', 'views'),
+                os.path.join(basepath, app_name, 'common', 'views', 'index'),
+                os.path.join(basepath, 'tests', app_name),
+                os.path.join(basepath, 'tests', app_name, 'common'),
+                os.path.join(basepath, 'tests', app_name, 'common', 'controllers'),
+            ])
+            files.extend([
+                (os.path.join(basepath, app_name, 'config', '__init__.py'),
+                 BLANK_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'config', 'base.py'),
+                 COMPONENT_CONFIG_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'config', 'dependencies.py'),
+                 DEPENDENCIES_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'common', '__init__.py'),
+                 BLANK_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'common', 'routes.py'),
+                 COMPONENT_ROUTES_PY_TEMPLATE),
+                (os.path.join(basepath, app_name, 'common', 'controllers', '__init__.py'),
+                 COMPONENT_SAMPLE_CONTROLLER_INIT_TEMPLATE),
+                (os.path.join(basepath, app_name, 'common', 'controllers', 'index.py'),
+                 SAMPLE_CONTROLLER_TEMPLATE),
+                (os.path.join(basepath, app_name, 'common', 'views', 'index', 'get.html'),
+                 SAMPLE_VIEW_TEMPLATE),
+                (os.path.join(basepath, 'tests', app_name, 'common',
+                 'controllers', '__init__.py'), BLANK_PY_TEMPLATE),
+                (os.path.join(basepath, 'tests', app_name, 'common',
+                 'controllers', 'test_index.py'), COMPONENT_SAMPLE_TEST_SUITE),
+            ])
+
         for path in paths:
             try:
                 os.mkdir(path)
@@ -110,7 +157,7 @@ class Project(command.Base, ContainerAware):
                     raise ConsoleError(
                         'File {0} already exists.'.format(filename))
         st = os.stat(files[-1][0])
-        os.chmod(files[-1][0], st.st_mode | stat.S_IEXEC)
+        os.chmod(files[0][0], st.st_mode | stat.S_IEXEC)
         self.write('Project {} created at {}'.format(name, root))
 
     @arg()
@@ -203,19 +250,90 @@ class Project(command.Base, ContainerAware):
             raise e
             _no_application_error()
 
-    @arg('fix', optional=True)
-    def validate(self, fix):
-        """Validate project configuration and dependencies.
-
-        Args:
-            fix: Attempt to resolve invalid settings.
-        """
-        pprint(self.application_config)
-
 
 def _no_application_error():
     raise ConsoleError(
         'No watson application can be found, are you sure you\'re in the correct directory?')
+
+
+EDITOR_CONFIG_TEMPLATE = """root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{py,md,ini,rst,html}]
+indent_style = space
+indent_size = 4
+
+[*.{css,scss,json,yml,js}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+"""
+
+GITIGNORE_TEMPLATE = """# OSX & Workspace
+.DS_STORE
+.cache/v/
+
+### Python ###
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+*.pyc
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+tests/_coverage
+
+# Translations
+*.mo
+
+# Documentation
+docs/_build
+"""
+
+
+ROBOTS_TEMPLATE = """User-agent: *
+Disallow:
+"""
+
+REQUIREMENTS_TEMPLATE = """# Framework requirements
+watson-framework
+
+# Project requirements
+pytest
+pytest-cov
+"""
 
 
 BLANK_PY_TEMPLATE = """# -*- coding: utf-8 -*-
@@ -223,12 +341,14 @@ BLANK_PY_TEMPLATE = """# -*- coding: utf-8 -*-
 
 APP_PY_TEMPLATE = """# -*- coding: utf-8 -*-
 from watson.framework import applications
-from ${app_name}.config import config
+from ${app_name}.config import base as config
 
 application = applications.Http(config)
 """
 
-ROUTES_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+SIMPLE_ROUTES_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+\"\"\"Create routes for your application here.
+\"\"\"
 routes = {
     'index': {
         'path': '/',
@@ -237,27 +357,64 @@ routes = {
 }
 """
 
-PROD_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
-from ${app_name}.config.routes import routes  # noqa
+COMPONENT_ROUTES_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+\"\"\"Create routes for your application here.
+\"\"\"
 
-
-debug = {
-    'enabled': False
+routes = {
+    'index': {
+        'path': '/',
+        'options': {'controller': '${app_name}.common.controllers.Index'}
+    }
 }
 """
 
-DEV_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+SIMPLE_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+\"\"\"Define and extend configuration settings for your application.
+\"\"\"
+
+import os
 from ${app_name}.config.routes import routes  # noqa
+from ${app_name}.config.dependencies import dependencies  # noqa
 
 
 debug = {
-    'enabled': True
+    'enabled': os.environ.get('DEV_ENV', False)
 }
-
 """
 
-SAMPLE_CONTROLLER_INIT_TEMPLATE = """# -*- coding: utf-8 -*-
+COMPONENT_CONFIG_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+\"\"\"Define and extend configuration settings for your application.
+\"\"\"
+
+import os
+from ${app_name}.config.dependencies import dependencies  # noqa
+
+components = [
+    '${app_name}.common'
+]
+
+debug = {
+    'enabled': os.environ.get('DEV_ENV', False)
+}
+"""
+
+DEPENDENCIES_PY_TEMPLATE = """# -*- coding: utf-8 -*-
+\"\"\"Define container dependencies.
+\"\"\"
+dependencies = {
+}
+"""
+
+SIMPLE_SAMPLE_CONTROLLER_INIT_TEMPLATE = """# -*- coding: utf-8 -*-
 from ${app_name}.controllers.index import Index
+
+
+__all__ = ['Index']
+"""
+
+COMPONENT_SAMPLE_CONTROLLER_INIT_TEMPLATE = """# -*- coding: utf-8 -*-
+from ${app_name}.common.controllers.index import Index
 
 
 __all__ = ['Index']
@@ -286,9 +443,20 @@ SAMPLE_VIEW_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
-SAMPLE_TEST_SUITE = """# -*- coding: utf-8 -*-
+SIMPLE_SAMPLE_TEST_SUITE = """# -*- coding: utf-8 -*-
 from watson import framework
 from ${app_name}.controllers.index import Index
+
+
+class TestSuiteIndex(object):
+    def test_get(self):
+        index = Index()
+        assert index.GET() == 'Welcome to Watson v{0}!'.format(framework.__version__)
+"""
+
+COMPONENT_SAMPLE_TEST_SUITE = """# -*- coding: utf-8 -*-
+from watson import framework
+from ${app_name}.common.controllers.index import Index
 
 
 class TestSuiteIndex(object):
@@ -304,7 +472,7 @@ import sys
 SCRIPT_DIR, SCRIPT_FILE = os.path.split(os.path.abspath(__file__))
 os.environ.update({
     'APP_MODULE': '${app_name}',
-    'APP_SETTINGS': '${app_name}.config',
+    'APP_SETTINGS': '${app_name}.config.base',
     'APP_DIR': os.path.join(SCRIPT_DIR, '${app_name}'),
     'PUBLIC_DIR': os.path.join(SCRIPT_DIR, 'public'),
     'SCRIPT_DIR': SCRIPT_DIR
