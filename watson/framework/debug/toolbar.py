@@ -35,7 +35,9 @@ class Toolbar(object):
         response, view_model = context['response'], event.params['view_model']
         if view_model.format == 'html':
             html_body = ''.join([
-                self.renderer.render('debug/toolbar', {'panels': self.panels}),
+                self.renderer.render(
+                    'debug/toolbar',
+                    {'panels': self.panels, 'config': self.config}),
                 self.replace_tag])
             response.body = response.body.replace(self.replace_tag, html_body)
         return response
