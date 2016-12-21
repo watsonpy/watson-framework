@@ -12,7 +12,7 @@ class TestFramework(object):
         self.panel = p
 
     def test_render(self):
-        assert '<dt>Version:</dt>' in self.panel.render()
+        assert '<dt>Version</dt>' in self.panel.render()
 
     def test_render_key_stat(self):
         assert self.panel.render_key_stat().startswith('v')
