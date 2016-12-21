@@ -203,7 +203,7 @@
         <div class="watson-debug-toolbar__buttons">
             <a href="javascript:;" id="DebugToolbarToggle" class="hide">&times;</a>
             {% for module, panel in panels|dictsort %}
-            <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> <span class="watson-debug-toolbar__button-title">{{ panel.title }}</span> <span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
+            <a href="javascript:;" data-panel="{{ panel.title }}"><i class="fa fa-{{ panel.icon }}" aria-hidden="true" title="{{ panel.title }}"></i> {% if not config.icons_only %}<span class="watson-debug-toolbar__button-title">{{ panel.title }}</span> {% endif %}<span class="watson-debug-toolbar__key-stat">{{ panel.render_key_stat() }}</span></a>
             {% endfor %}
         </div>
         {% for module, panel in panels|dictsort %}
