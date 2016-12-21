@@ -1,3 +1,9 @@
+3.4.0
+
+- Applications can now be split up into components to better provide organisation (use --component_based)
+- New Project no longer splits up configuration into separate files based on server type, prefer ENV vars
+- Default .gitignore file generated with New Project
+
 3.3.0
 
 - Views can now also be loaded via the PackageLoader [(package, folder)] format
