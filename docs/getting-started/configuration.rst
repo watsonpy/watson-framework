@@ -203,8 +203,6 @@ Sentry is a great piece of software that allows you to aggregrate your error log
        'options': {
            'handlers': {
                'sentry': {
-                   'level': 'ERROR',
-                   'class': 'raven.handlers.logging.SentryHandler',
                    'dsn': 'http://SENTRY_DSN_URL_GOES_HERE',
                },
            },
@@ -216,6 +214,23 @@ Sentry is a great piece of software that allows you to aggregrate your error log
            }
        }
    }
+
+If you'd like to have Sentry be used for every exception, the following will work:
+
+.. code-block:: python
+
+    logging = {
+        'options': {
+            'handlers': {
+                'sentry': {
+                    'dsn': 'http://SENTRY_DSN_URL_GOES_HERE',
+                },
+            },
+            'root': {
+                'handlers': ['console', 'sentry']
+            }
+        }
+    }
 
 You can then access the logger from within your app with the following code:
 
