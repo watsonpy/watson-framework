@@ -10,6 +10,7 @@ from watson.framework import events
 # Debug settings
 debug = {
     'enabled': False,
+    'icons_only': False,
     'panels': {
         'watson.framework.debug.panels.Request': {
             'enabled': True
@@ -159,6 +160,10 @@ logging = {
                 'formatter': 'verbose',
                 'stream': 'ext://sys.stdout'
             },
+            'sentry': {
+                'level': 'ERROR',
+                'class': 'raven.handlers.logging.SentryHandler',
+            },
         },
         'loggers': {},
         'root': {
@@ -195,12 +200,15 @@ mail = {
     },
 }
 
+# Components
+components = []
+
 # Application event settings
 events = {
     events.EXCEPTION: [('app_exception_listener',)],
     events.INIT: [
-        ('watson.framework.debug.listeners.Init', 1, True),
-        ('watson.framework.logging.listeners.Init', 1, True)
+        ('watson.framework.logging.listeners.Init', 1),
+        ('watson.framework.debug.listeners.Init', 1)
     ],
     events.ROUTE_MATCH: [('watson.framework.listeners.Route',)],
     events.DISPATCH_EXECUTE: [('app_dispatch_execute_listener',)],
