@@ -3,6 +3,7 @@ import importlib
 import os
 import types
 import jinja2
+from jinja2.exceptions import TemplateNotFound
 from watson.common import datastructures
 from watson.framework.views.renderers import abc
 
@@ -30,6 +31,16 @@ class Renderer(abc.Renderer):
 
     def add_package_loader(self, package, path):
         self.loader.loaders.append(jinja2.PackageLoader(package, path))
+
+    @property
+    def searched_paths(self):
+        paths = []
+        for loader in self.loader.loaders:
+            if isinstance(loader, jinja2.FileSystemLoader):
+                paths += loader.searchpath
+            elif isinstance(loader, jinja2.PackageLoader):
+                paths.append(loader.provider.module_path)
+        return sorted(paths)
 
     def __init__(self, config=None, application=None):
         super(Renderer, self).__init__(config)
@@ -68,9 +79,14 @@ class Renderer(abc.Renderer):
         self._env = jinja2.Environment(**kwargs)
 
     def render(self, template, data, context=None):
-        template = self._env.get_template(
-            '{0}.{1}'.format(template_to_posix_path(template),
-                             self.config['extension']))
+        try:
+            template = self._env.get_template(
+                '{0}.{1}'.format(template_to_posix_path(template),
+                                 self.config['extension']))
+        except TemplateNotFound as exc:
+            message = '{} not found in {}'.format(
+                str(exc), ', '.join(self.searched_paths))
+            raise TemplateNotFound(message) from exc
         return template.render(context=context or {}, **data)
 
     def __call__(self, view_model, context=None):
