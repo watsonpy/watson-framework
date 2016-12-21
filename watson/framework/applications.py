@@ -103,9 +103,45 @@ class Base(ContainerAware, EventDispatcherAware, metaclass=abc.ABCMeta):
         else:
             self.exception_class = imports.load_definition_from_string(
                 self.config['exceptions']['class'])
+        self.register_components()
         self.register_events()
         self.trigger_init_event()
         super(Base, self).__init__()
+
+    def register_components(self):
+        """Register any components specified with the application.
+
+        Components can include the following modules:
+            - dependencies
+            - events
+            - models
+            - routes
+            - views
+
+        Registering a component will merge any configuration settings within
+        the above modules prior to the application booting.
+
+        An example component might look like:
+
+        /component
+            /views
+                /index.html
+            /routes.py
+            /views.py
+        """
+        types = ('dependencies', 'events', 'routes', 'models', 'views')
+        for component in self.config['components']:
+            for type_ in types:
+                try:
+                    type_component = imports.load_definition_from_string(
+                        '{}.{}.{}'.format(component, type_, type_))
+                    self._config[type_] = dict_deep_update(
+                        self._config.get(type_, {}), type_component)
+                except:
+                    pass
+            self._config['views'][
+                'renderers']['jinja2']['config']['packages'].append(
+                (component, 'views'))
 
     def trigger_init_event(self):
         """Execute any event listeners for the INIT event.
