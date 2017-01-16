@@ -7,7 +7,7 @@ Your First Application
 Directory Structure
 -------------------
 
-Watson has a preferred directory structure for it's applications which can be created automatically by the ``watson-console.py project new [project name] [app name]`` command.
+Watson has a preferred directory structure for it's applications which can be created automatically by the ``watson-console project new [project name] [app name]`` command. [project name] refers to the top level directory of the project you're working on, where as [app name] refers to the python package that you'll be using in your code.
 
 .. code-block:: bash
 
@@ -35,7 +35,7 @@ Watson has a preferred directory structure for it's applications which can be cr
 
 
 .. tip::
-    For example **watson-console.py project new sample.com.local sample** creates a new project named sample.com.local and an application package named sample
+    For example **watson-console project new sample.com.local sample** creates a new project named sample.com.local and an application package named sample
 
 The application will be created within the current working directory, unless you override it with the ``-d DIR`` option.
 
