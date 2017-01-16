@@ -1,6 +1,5 @@
 Pygments == 1.6
 Jinja2 >= 2.8
-raven >= 5.32
 watson-cache >= 1.0.1
 watson-common >= 1.4.2
 watson-console >= 2.0.2

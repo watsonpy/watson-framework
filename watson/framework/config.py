@@ -160,10 +160,6 @@ logging = {
                 'formatter': 'verbose',
                 'stream': 'ext://sys.stdout'
             },
-            'sentry': {
-                'level': 'ERROR',
-                'class': 'raven.handlers.logging.SentryHandler',
-            },
         },
         'loggers': {},
         'root': {
