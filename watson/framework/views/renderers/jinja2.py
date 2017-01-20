@@ -45,7 +45,7 @@ class Renderer(abc.Renderer):
     def __init__(self, config=None, application=None):
         super(Renderer, self).__init__(config)
         self._debug_mode = application.config['debug']['enabled']
-        self.register_loaders()
+        self.register_loaders(application)
         _types = ('filters', 'globals')
         for _type in _types:
             for module in config[_type]:
@@ -60,7 +60,7 @@ class Renderer(abc.Renderer):
                     else:
                         env_type[name] = application.container.get(obj)
 
-    def register_loaders(self):
+    def register_loaders(self, application=None):
         user_path_loaders = [jinja2.FileSystemLoader(path)
                              for path in self.config.get('paths')]
         user_package_loaders = [jinja2.PackageLoader(*package)
@@ -77,6 +77,7 @@ class Renderer(abc.Renderer):
         kwargs['loader'] = loader
         self._choice_loader = loader
         self._env = jinja2.Environment(**kwargs)
+        self._env.application = application
 
     def render(self, template, data, context=None):
         try:
