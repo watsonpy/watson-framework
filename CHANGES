@@ -1,3 +1,7 @@
+3.4.3
+
+- Fixes to component loading for dependencies
+
 3.4.0
 
 - Applications can now be split up into components to better provide organisation (use --component_based)

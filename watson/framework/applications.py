@@ -4,7 +4,7 @@ from types import ModuleType
 from watson.console import Runner
 from watson.console.command import find_commands_in_module
 from watson.common.datastructures import dict_deep_update, module_to_dict
-from watson.common import imports
+from watson.common import imports, contextmanagers
 from watson.di import ContainerAware
 from watson.di.container import IocContainer
 from watson.events.dispatcher import EventDispatcherAware
@@ -132,13 +132,14 @@ class Base(ContainerAware, EventDispatcherAware, metaclass=abc.ABCMeta):
         types = ('dependencies', 'events', 'routes', 'models', 'views')
         for component in self.config['components']:
             for type_ in types:
-                try:
+                with contextmanagers.suppress(Exception):
                     type_component = imports.load_definition_from_string(
                         '{}.{}.{}'.format(component, type_, type_))
-                    self._config[type_] = dict_deep_update(
-                        self._config.get(type_, {}), type_component)
-                except:
-                    pass
+                    if type_ == 'dependencies':
+                        self.container.update(type_component)
+                    if not isinstance(type_component, ModuleType):
+                        self._config[type_] = dict_deep_update(
+                            self._config.get(type_, {}), type_component)
             self._config['views'][
                 'renderers']['jinja2']['config']['packages'].append(
                 (component, 'views'))
