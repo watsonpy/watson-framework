@@ -1,3 +1,7 @@
+3.5.0
+
+- BC: No more support for Python 3.3, requiring Enum in watson-forms
+
 3.4.3
 
 - Fixes to component loading for dependencies
