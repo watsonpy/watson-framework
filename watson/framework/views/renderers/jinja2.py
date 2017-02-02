@@ -18,6 +18,7 @@ class Renderer(abc.Renderer):
     _env = None
     _debug_mode = False
     _choice_loader = None
+    _fully_loaded = False
 
     @property
     def env(self):
@@ -46,9 +47,11 @@ class Renderer(abc.Renderer):
         super(Renderer, self).__init__(config)
         self._debug_mode = application.config['debug']['enabled']
         self.register_loaders(application)
+
+    def register_filters_globals(self, application):
         _types = ('filters', 'globals')
         for _type in _types:
-            for module in config[_type]:
+            for module in self.config[_type]:
                 mod = importlib.import_module(module)
                 dic = datastructures.module_to_dict(
                     mod, ignore_starts_with='__')
@@ -59,6 +62,7 @@ class Renderer(abc.Renderer):
                         env_type[name] = definition
                     else:
                         env_type[name] = application.container.get(obj)
+        self._fully_loaded = True
 
     def register_loaders(self, application=None):
         user_path_loaders = [jinja2.FileSystemLoader(path)
@@ -80,6 +84,8 @@ class Renderer(abc.Renderer):
         self._env.application = application
 
     def render(self, template, data, context=None):
+        if not self._fully_loaded:
+            self.register_filters_globals(self._env.application)
         try:
             template = self._env.get_template(
                 '{0}.{1}'.format(template_to_posix_path(template),
