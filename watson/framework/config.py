@@ -94,8 +94,7 @@ dependencies = {
             ]
         },
         'mailer_backend': {
-            'item': lambda container: container.get(container.get(
-                'application.config')['mail']['backend']['class']),
+            'item': lambda container: container.get('application.config')['mail']['backend']['class'],
             'init': lambda container: container.get('application.config')['mail']['backend']['options']
         },
         'mailer': {
@@ -104,7 +103,7 @@ dependencies = {
                 lambda container: container.get('mailer_backend'),
                 lambda container: container.get(
                     container.get('application.config')['views']['renderers'][container.get(
-                        'application.config')['views']['default_renderer']]['name'])
+                        'application.config')['views']['default_renderer']]['name']),
             ]
         }
     }
