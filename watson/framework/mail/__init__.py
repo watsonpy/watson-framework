@@ -10,11 +10,19 @@ class Mailer(object):
         self.backend = backend
         self.renderer = renderer
 
-    def send(self, template=None, body=None, **kwargs):
+    def send(
+            self,
+            template=None,
+            alternative_template=None,
+            body=None,
+            **kwargs):
+        kwargs['body'] = body
         if template:
-            body = self.renderer.render(template, data=body)
+            kwargs['body'] = self.renderer.render(template, data=body)
+        if alternative_template:
+            kwargs['alternative'] = self.renderer.render(
+                alternative_template, data=body)
         message = Message(
             backend=self.backend,
-            body=body,
             **kwargs)
         return message.send()
