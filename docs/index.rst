@@ -28,7 +28,7 @@ Watson is designed for Python 3.3 and up.
 Dependencies
 ------------
 
-Watson currently requires the following modules to work out of box:
+Watson currently requires the following modules to work out of the box:
 
 -  `Jinja2`_
     - For view templating
