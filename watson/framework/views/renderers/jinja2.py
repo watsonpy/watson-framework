@@ -87,9 +87,9 @@ class Renderer(abc.Renderer):
         if not self._fully_loaded:
             self.register_filters_globals(self._env.application)
         try:
-            template = self._env.get_template(
-                '{0}.{1}'.format(template_to_posix_path(template),
-                                 self.config['extension']))
+            if '.' not in template:
+                template = '{0}.{1}'.format(template, self.config['extension'])
+            template = self._env.get_template(template_to_posix_path(template))
         except TemplateNotFound as exc:
             message = '{} not found in {}'.format(
                 str(exc), ', '.join(self.searched_paths))
