@@ -52,6 +52,29 @@ class TestHttpApplication(object):
         response = application(environ, start_response)
         assert response == [b'{"content": "Posted Hello World!"}']
 
+    def test_json_output(self):
+        application = applications.Http({
+            'routes': {
+                'home': {
+                    'path': '/',
+                    'options': {
+                        'controller': 'tests.watson.framework.support.AnotherSampleActionController',
+                    },
+                    'defaults': {
+                        'action': 'json'
+                    },
+                }
+            },
+            'debug': {
+                'enabled': True
+            }
+        })
+        environ = sample_environ(PATH_INFO='/',
+                                 REQUEST_METHOD='GET',
+                                 HTTP_ACCEPT='application/json')
+        response = application(environ, start_response)
+        assert response == [b'{"name": "value"}']
+
     def test_raise_exception_event_not_found(self):
         application = applications.Http()
         response = application(sample_environ(PATH_INFO='/'), start_response)

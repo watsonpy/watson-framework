@@ -13,7 +13,7 @@ class Renderer(abc.Renderer):
         _xml = xml.from_dict(data)
         return xml.to_string(_xml, xml_declaration=True)
 
-    def _formatted_error(self, view_model, context=None):
+    def _formatted_error(self, view_model, context=None, **kwargs):
         if not view_model.data['debug']:
             if context and context.get('response'):
                 status_code = context['response'].status_code

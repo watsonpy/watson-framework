@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from watson.framework import views, controllers
+from watson.http import messages
 
 
-def view(template=None, format=None):
+def view(template=None, format=None, renderer_args=None):
     """Return the view model in a specific format and with a specific template.
 
     This will not work if the response returned from the controller is of
@@ -12,6 +13,7 @@ def view(template=None, format=None):
         func (callable): the function that is being wrapped
         template (string): the template to use
         format (string): the format to output as
+        renderer_args (mixed): args to be passed to the renderer
 
     Returns:
         The view model in the specific format
@@ -27,17 +29,20 @@ def view(template=None, format=None):
     """
     def decorator(func):
         def wrapper(self, *args, **kwargs):
-            controller_response = func(self, *args, **kwargs)
-            if controller_response is None:
-                controller_response = {}
-            if isinstance(controller_response, controllers.ACCEPTABLE_RETURN_TYPES):
-                controller_response = {'content': controller_response}
-            if isinstance(controller_response, (dict, list, tuple)):
-                controller_response = views.Model(data=controller_response)
-            if format:
-                controller_response.format = format
-            if template:
-                controller_response.template = template
-            return controller_response
+            response = func(self, *args, **kwargs)
+            if response is None:
+                response = {}
+            elif isinstance(response, controllers.ACCEPTABLE_RETURN_TYPES):
+                response = {'content': response}
+            if not isinstance(response, messages.Response):
+                response = views.Model(data=response)
+            if isinstance(response, views.Model):
+                if format:
+                    response.format = format
+                if template:
+                    response.template = template
+                if renderer_args:
+                    response.renderer_args = renderer_args
+            return response
         return wrapper
     return decorator

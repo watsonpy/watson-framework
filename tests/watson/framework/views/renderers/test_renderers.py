@@ -3,7 +3,8 @@ from watson.framework.views.renderers.xml import Renderer as Xml
 from watson.framework.views.renderers.json import Renderer as Json
 from watson.framework.views.renderers.jinja2 import Renderer as Jinja2, template_to_posix_path
 from watson.framework import applications
-from tests.watson.framework.support import sample_view_model
+from watson.http import messages
+from tests.watson.framework.support import sample_view_model, sample_object_view_model
 
 
 class TestXmlRenderer(object):
@@ -20,6 +21,19 @@ class TestJsonRenderer(object):
         renderer = Json()
         output = renderer(sample_view_model())
         assert output == '{"test": {"nodes": {"node": ["Testing", "Another node"]}}}'
+
+    def test_output_serialized_object(self):
+        renderer = Json()
+        output = renderer(sample_object_view_model())
+        assert output == '{"name": "value"}'
+
+    def test_output_error(self):
+        message = messages.Response(status_code=500)
+        renderer = Json()
+        vm = sample_view_model()
+        vm.data['debug'] = False
+        output = renderer._formatted_error(vm, context={'response': message})
+        assert output['name'] == 'Unknown Error'
 
 
 class TestJinja2Renderer(object):

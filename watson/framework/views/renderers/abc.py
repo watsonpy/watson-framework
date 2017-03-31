@@ -15,5 +15,5 @@ class Renderer(metaclass=abc.ABCMeta):
         self.config = config or {}
 
     @abc.abstractmethod
-    def __call__(self, view_model, context=None):
+    def __call__(self, view_model, context=None, **kwargs):
         raise NotImplementedError('You must implement __call__')  # pragma: no cover

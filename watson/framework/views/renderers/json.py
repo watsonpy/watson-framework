@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
-from json import JSONEncoder
+from watson.common import json
 from watson.framework.views.renderers import abc
 from watson.framework.views.templates import shared
 
 
 class Renderer(abc.Renderer):
 
-    encoder = None
+    _encoder = None
 
-    def __init__(self):
-        self.encoder = JSONEncoder()
+    @property
+    def encoder(self):
+        if not self._encoder:
+            self.encoder = json.JSONEncoder
+        return self._encoder()
+
+    @encoder.setter
+    def encoder(self, encoder):
+        self._encoder = encoder
 
     def __call__(self, view_model, context=None):
         data = view_model.data
         if view_model.template in shared.TEMPLATES.keys():
             data = self._formatted_error(view_model, context)
-        return self.encoder.encode(data)
+        return self.encoder.encode(data, **view_model.renderer_args)
 
     def _formatted_error(self, view_model, context=None):
         if not view_model.data['debug']:

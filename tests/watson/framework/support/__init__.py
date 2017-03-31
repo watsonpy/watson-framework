@@ -6,6 +6,7 @@ from watson.console.decorators import cmd
 from watson.http.messages import Response
 from watson.framework import controllers
 from watson.framework.views import Model
+from watson.framework.views.decorators import view
 
 
 def start_response(status_line, headers):
@@ -17,6 +18,10 @@ def sample_environ(**kwargs):
     util.setup_testing_defaults(environ)
     environ.update(kwargs)
     return environ
+
+
+class SampleClass(object):
+    name = 'value'
 
 
 class SampleActionController(controllers.Action):
@@ -54,10 +59,22 @@ class SampleActionController(controllers.Action):
     def view_model_template_action(self, **kwargs):
         return Model(data='test', template='404')
 
+renderer_args = {
+    'mapping': {
+        SampleClass: {
+            'attributes': ('name',)
+        }
+    }
+}
+
 
 class AnotherSampleActionController(controllers.Action):
     def do_method_forward(self):
         return 'Another Response'
+
+    @view(format='json', renderer_args=renderer_args)
+    def json_action(self):
+        return SampleClass()
 
 
 class ShortCircuitedController(controllers.Rest):
@@ -73,10 +90,21 @@ class SampleRestController(controllers.Rest):
 
 
 def sample_view_model():
-    return (
-        Model(
-            format='html', template=None, data={"test": {"nodes": {"node": ["Testing", "Another node"]}}})
-    )
+    return Model(
+            format='html',
+            template=None,
+            data={"test": {"nodes": {"node": ["Testing", "Another node"]}}})
+
+
+def sample_object_view_model():
+    return Model(
+            format='json',
+            data=SampleClass(),
+            renderer_args={
+                'mapping': {
+                    SampleClass: {'attributes': ('name',)}
+                }
+            })
 
 
 class TestController(controllers.Rest):

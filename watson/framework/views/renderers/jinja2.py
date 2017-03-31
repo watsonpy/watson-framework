@@ -96,7 +96,7 @@ class Renderer(abc.Renderer):
             raise TemplateNotFound(message) from exc
         return template.render(context=context or {}, **data)
 
-    def __call__(self, view_model, context=None):
+    def __call__(self, view_model, context=None, **kwargs):
         return self.render(
             view_model.template,
             data=view_model.data,
