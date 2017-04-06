@@ -10,7 +10,7 @@ class Mailer(object):
         self.backend = backend
         self.renderer = renderer
 
-    def send(
+    def create(
             self,
             template=None,
             alternative_template=None,
@@ -25,4 +25,16 @@ class Mailer(object):
         message = Message(
             backend=self.backend,
             **kwargs)
+        return message
+
+    def transmit(self, message):
         return message.send()
+
+    def send(
+            self,
+            template=None,
+            alternative_template=None,
+            body=None,
+            **kwargs):
+        message = self.create(template, alternative_template, body, **kwargs)
+        return self.transmit(message)
