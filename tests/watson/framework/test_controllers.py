@@ -220,3 +220,9 @@ class TestFlashMessageContainer(object):
         session_data = {'flash_messages': existing_container}
         new_container = controllers.FlashMessagesContainer(session_data)
         assert len(new_container) == 1
+
+    def test_add_same_message_to_container(self):
+        container = controllers.FlashMessagesContainer({})
+        container.add('Test')
+        container.add('Test')
+        assert len(container) == 1

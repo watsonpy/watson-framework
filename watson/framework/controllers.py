@@ -279,11 +279,17 @@ class FlashMessagesContainer(object):
         Args:
             message (string): The message to add to the container.
             namespace (string): The namespace to sit the message in.
+
+        Returns:
+            boolean: Based on whether or not the message was added
         """
+        if message in self:
+            return False
         self.messages.setdefault(namespace, []).append(message)
         if write_to_session:
             # ensure that the flash messages are written to the session
             self.__write_to_session()
+        return True
 
     def add_messages(self, messages, namespace='info'):
         """Adds a list of messages to the specified namespace.
@@ -311,6 +317,13 @@ class FlashMessagesContainer(object):
         self.session[self.session_key] = self.messages
 
     # Internals
+
+    def __contains__(self, message):
+        for namespace, messages in self.messages.items():
+            for msg in messages:
+                if msg == message:
+                    return True
+        return False
 
     def __iter__(self):
         for namespace, messages in self.messages.items():
