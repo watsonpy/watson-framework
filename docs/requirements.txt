@@ -11,3 +11,4 @@ watson-form >= 2.2.0
 watson-html >= 1.2.0
 watson-routing >= 1.0.1
 watson-validators >= 1.0.0
+watson-mail >= 1.0.0
