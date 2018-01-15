@@ -239,6 +239,7 @@
         toggle.classList.add('hide');
         toolbar.removeAttribute('style');
         toolbar.classList.add('collapsed');
+        createCookie(watsonDebugToolbarHeightCookie, 0);
         removeActiveClasses();
     });
     for (var i = 0; i < buttons.length; i++) {
