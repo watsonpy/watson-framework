@@ -20,7 +20,7 @@ def generate_requirements():
         ['pipenv', 'lock', '-r'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = process.communicate()
-    output = output.strip().split('\n')
+    output = output.decode('utf-8').strip().split('\n')
     return output
 
 
@@ -49,6 +49,7 @@ def clean():
     os.system('find . -name "__pycache__" -print0|xargs -0 rm -rf')
     os.system('find . -name "*.egg-info" -print0|xargs -0 rm -rf')
     os.system('rm -rf dist')
+    os.system('rm -rf build')
 
 
 def confirm(prompt):
