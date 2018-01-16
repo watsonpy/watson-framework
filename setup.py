@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import subprocess
 from setuptools import setup, Command, find_packages
 import watson.framework
 
@@ -14,6 +15,15 @@ class BaseCommand(Command):
         pass
 
 
+def generate_requirements():
+    process = subprocess.Popen(
+        ['pipenv', 'lock', '-r'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = process.communicate()
+    output = output.strip().split('\n')
+    return output
+
+
 class PyTest(BaseCommand):
     """Runs all the unit tests.
     """
@@ -26,7 +36,7 @@ class PyPiPublish(BaseCommand):
     """Publishes the code to PyPi.
     """
     def run(self):
-        os.system('py.test')
+        os.system('python setup.py test')
         if (confirm('Are you sure you want to push to PyPi?')):
             os.system('python setup.py sdist bdist_wheel upload')
             clean()
@@ -49,6 +59,7 @@ def confirm(prompt):
             answer = 'N'
         return False if answer != 'Y' else True
 
+
 path = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(path, 'LICENSE')) as f:
@@ -57,11 +68,7 @@ with open(os.path.join(path, 'LICENSE')) as f:
 with open(os.path.join(path, 'README.rst')) as f:
     readme = f.read()
 
-with open(os.path.join(path, 'requirements.txt')) as f:
-    requirements = f.read().splitlines()
-
-with open(os.path.join(path, 'requirements-test.txt')) as f:
-    test_requirements = f.read().splitlines()
+requirements = generate_requirements()
 
 setup(
     name='watson-framework',
@@ -93,15 +100,22 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Server'
     ],
-    platforms=['Python 3.4'],
-    keywords=['watson',
-              'python3',
-              'web framework',
-              'framework',
-              'wsgi',
-              'web'],
+    platforms=[
+        'Python 3.4',
+        'Python 3.5',
+        'Python 3.6'
+    ],
+    keywords=[
+        'watson',
+        'python3',
+        'web framework',
+        'framework',
+        'wsgi',
+        'web'
+    ],
 
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
 
     zip_safe=False,
@@ -111,12 +125,6 @@ setup(
         ]
     },
     install_requires=requirements,
-    extras_require={
-        'test': test_requirements,
-        'mako': [
-            'mako >= 0.9.1'
-        ],
-    },
 
     cmdclass={
         'test': PyTest,
