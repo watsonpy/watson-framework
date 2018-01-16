@@ -43,3 +43,7 @@ tests/_coverage
 
 # Documentation
 docs/_build
+
+# pipenv
+.venv
+Pipfile.lock

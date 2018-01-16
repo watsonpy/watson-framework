@@ -4,14 +4,13 @@ python:
   - 3.5
   - 3.6
 install:
-  - pip install -r requirements-test.txt
-  - pip install -r requirements.txt
+  - pipenv install --dev
 before_script:
   - mkdir -p tests/_coverage
 script:
-  - py.test tests/ --cov watson --cov-report term-missing
+  - pipenv run pytest tests/ --cov watson --cov-report term-missing
 after_success:
-  - coveralls --verbose
+  - pipenv run coveralls --verbose
 notifications:
   slack:
     secure: T/JltnYcwN8CJaqkzMOZmMPPbwOEeW2MkDn/aEVZ9uz9pQBalUIxuzcbhFSUvtQWJhKzHllFiC2caLQM5khal7zebRkQtcifDoKVbrQpJrAANc74KEQpuFN5ALYI1ts7Ec7G7AfkNAywYKzP0rZhgFvmhbIor2jErO6oyCULLeM=
