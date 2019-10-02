@@ -90,7 +90,7 @@ class DispatchExecute(Base):
                     data=model_data)
             context['response'] = controller.response
             return controller.response, view_model
-        except (ApplicationError, NotFoundError, InternalServerError) as exc:
+        except (ApplicationError, NotFoundError, InternalServerError):
             raise  # pragma: no cover
         except Exception as exc:
             raise InternalServerError(
@@ -117,11 +117,11 @@ class Exception_(Base):
     def set_status_code(self, exception):
         try:
             exception.status_code
-        except:
+        except Exception:
             setattr(exception, 'status_code', 500)
         try:
             exception.format
-        except:
+        except Exception:
             setattr(exception, 'format', 'html')
 
     def log(self, exception):
@@ -167,7 +167,7 @@ class Render(Base):
             view_model.format, default_renderer)
         try:
             mime_type = MIME_TYPES[view_model.format][0]
-        except:
+        except Exception:
             if '/' in view_model.format:
                 mime_type = view_model.format
             else:
@@ -176,7 +176,7 @@ class Render(Base):
         renderer_instance = container.get(renderer['name'])
         try:
             response.body = renderer_instance(view_model, context=context)
-        except Exception as exc:
+        except Exception:
             try:
                 renderer_instance = container.get(default_renderer['name'])
                 view_model.format = self.view_config['default_format']

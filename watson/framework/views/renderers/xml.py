@@ -21,7 +21,7 @@ class Renderer(abc.Renderer):
                 status_code = -1
             try:
                 data = shared.TEMPLATES[view_model.template]
-            except:
+            except Exception:
                 data = {
                     'name': 'Unknown Error',
                     'message': 'An unknown {} error has occurred.'.format(

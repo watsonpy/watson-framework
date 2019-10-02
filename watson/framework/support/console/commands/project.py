@@ -142,7 +142,7 @@ class Project(command.Base, ContainerAware):
         for path in paths:
             try:
                 os.mkdir(path)
-            except:
+            except Exception:
                 if not override:
                     raise ConsoleError(
                         'Project already exists at {0}'.format(basepath))
@@ -152,7 +152,7 @@ class Project(command.Base, ContainerAware):
                     file.write(
                         Template(
                             contents).safe_substitute(app_name=app_name))
-            except:
+            except Exception:
                 if not override:
                     raise ConsoleError(
                         'File {0} already exists.'.format(filename))
@@ -178,12 +178,12 @@ class Project(command.Base, ContainerAware):
             cli_args = ''
             sys.argv = [sys.argv.pop(0)]
             try:
-                import pytest
+                import pytest  # noqa
                 test_runner = 'pytest'
                 cli_args = '--cov {0}'.format(app_module)
-            except:
+            except Exception:
                 with suppress(ImportError):
-                    import nose
+                    import nose  # noqa
                     test_runner = 'nose'
                     cli_args = '--cover-package={0}'.format(app_module)
             if test_runner:
@@ -191,7 +191,7 @@ class Project(command.Base, ContainerAware):
             else:
                 raise ConsoleError(
                     "You must install either 'nose' or 'py.test' to run the unit tests.")
-        except:
+        except Exception:
             _no_application_error()
         os.chdir(current_directory)
 

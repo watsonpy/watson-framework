@@ -60,7 +60,7 @@ class ExceptionHandler(object):
     def __process_exception(self, exc_info):
         try:
             code = exc_info[1].status_code
-        except:
+        except Exception:
             code = 500
         exc = exc_info[1]
         message = str(exc)
@@ -70,7 +70,7 @@ class ExceptionHandler(object):
             tb = exc.__traceback__
             cause_message = str(exc)
             type = get_qualified_name(exc)
-        except:
+        except Exception:
             tb = exc_info[2]
             type = get_qualified_name(exc_info[0])
         frames = []
@@ -94,10 +94,10 @@ class ExceptionHandler(object):
                 val = None
                 try:
                     val = str(value)
-                except:  # pragma: no cover
+                except Exception:  # pragma: no cover
                     try:
                         val = repr(value)  # pragma: no cover
-                    except:
+                    except Exception:
                         val = None
                 this_frame['vars'][var_name] = val
             frames.append(this_frame)

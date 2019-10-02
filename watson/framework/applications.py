@@ -158,11 +158,11 @@ class Base(ContainerAware, EventDispatcherAware, metaclass=abc.ABCMeta):
             for callback_priority_pair in listeners:
                 try:
                     priority = callback_priority_pair[1]
-                except:
+                except IndexError:
                     priority = 1
                 try:
                     once_only = callback_priority_pair[2]
-                except:
+                except IndexError:
                     once_only = False
                 self.dispatcher.add(
                     event,
