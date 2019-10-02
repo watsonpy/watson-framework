@@ -1,10 +1,8 @@
-# OSX & Workspace
+# Workspace
 .DS_STORE
-*.sublime-project
-*.sublime-workspace
-tests/_coverage
-docs/_build
-.cache/v/
+.vscode
+*.code-workspace
+.venv
 
 ### Python ###
 *.py[cod]
@@ -35,15 +33,16 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
-nosetests.xml
 tests/_coverage
 
 # Translations
 *.mo
 
+### Artifacts ###
+
+# Cache
+.cache/v/
+.pytest_cache
+
 # Documentation
 docs/_build
-
-# pipenv
-.venv
-Pipfile.lock
