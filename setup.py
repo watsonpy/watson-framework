@@ -27,7 +27,7 @@ setup(
     author='Simon Coulton',
     author_email='simon@bespohk.com',
 
-    license=read('LICENSE'),
+    license='BSD',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
