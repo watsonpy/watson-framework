@@ -235,7 +235,7 @@ class Project(command.Base, ContainerAware):
                     for match in matches:
                         route = match.route
                         self.write('{0}\t{1}\n'.format(
-                            route.name.rjust(len(longest_route)), route.path))
+                            route.name.rjust(len(longest_route)), route.path_or_regex))
                 else:
                     raise ConsoleError('There are no matching routes.')
             else:
