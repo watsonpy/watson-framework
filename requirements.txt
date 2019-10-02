@@ -1,0 +1,13 @@
+Pygments == 1.6
+Jinja2 >= 2.8
+watson-cache >= 1.0.1
+watson-common >= 1.5.0
+watson-console >= 2.0.2
+watson-dev >= 3.0.1
+watson-di >= 2.2.2
+watson-filters >= 1.0.0
+watson-form >= 4.0.3
+watson-html >= 1.2.0
+watson-mail >= 1.2.1
+watson-routing >= 1.2.1
+watson-validators >= 1.0.2
