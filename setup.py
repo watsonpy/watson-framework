@@ -21,7 +21,8 @@ setup(
     version=version,
     url='http://github.com/watsonpy/' + name,
     description=description,
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
 
     author='Simon Coulton',
     author_email='simon@bespohk.com',
