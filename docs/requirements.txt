@@ -1,7 +1,7 @@
 sphinxcontrib-napoleon
 jinja2==2.10
 markupsafe==1.0
-pygments==1.6
+pygments==2.7.4
 watson-cache==1.1.0
 watson-common==1.6.2
 watson-console==2.0.2
